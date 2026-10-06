@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Didaktische Jahresplanung für die Industriemechanikerklassen 10, 11 und 12/13 der Berufsschule Pegnitz.">
+  <meta name="theme-color" content="#15324a">
+  <title>DJP Industriemechaniker · Berufsschule Pegnitz</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%2315324a'/%3E%3Cpath d='M15 17h34v30H15z' fill='%23fff'/%3E%3Cpath d='M15 25h34M25 17v30M35 17v30M45 17v30' stroke='%2315324a' stroke-width='3'/%3E%3Crect x='35' y='25' width='10' height='11' fill='%23e3a72f'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">JP</div>
+        <div>
+          <strong>Jahresplanung</strong>
+          <span>Berufsschule</span>
+        </div>
+      </div>
+
+      <div class="topbar-center">
+        <label class="school-year-label" for="schoolYear">Schuljahr</label>
+        <select id="schoolYear" aria-label="Schuljahr">
+          <option>2026/27</option>
+          <option>2027/28</option>
+          <option>2028/29</option>
+        </select>
+        <span class="save-state" id="saveState"><span class="save-dot"></span>Lokal gespeichert</span>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-button" id="undoBtn" type="button" title="Rückgängig" aria-label="Rückgängig" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h9a7 7 0 1 1 0 14h-3"/></svg>
+        </button>
+        <button class="icon-button" id="redoBtn" type="button" title="Wiederholen" aria-label="Wiederholen" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9h-9a7 7 0 1 0 0 14h3"/></svg>
+        </button>
+        <button class="icon-button" id="printBtn" type="button" title="Drucken" aria-label="Drucken">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+        </button>
+        <button class="button secondary" id="exportBtn" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Export
+        </button>
+        <button class="button secondary" id="importBtn" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21V9"/><path d="m17 14-5-5-5 5"/><path d="M5 3h14"/></svg>
+          Import
+        </button>
+        <input type="file" id="importFile" accept="application/json" hidden>
+      </div>
+    </header>
+
+    <aside class="sidebar" aria-label="Klassen">
+      <div class="sidebar-heading">
+        <div>
+          <span class="eyebrow">Planungsraum</span>
+          <h1>Klassen</h1>
+        </div>
+        <button class="icon-button dark" id="addClassBtn" type="button" title="Klasse hinzufügen" aria-label="Klasse hinzufügen">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+      <div class="class-list" id="classList"></div>
+      <div class="sidebar-summary">
+        <span id="classCount">0 Klassen</span>
+        <span id="moduleCount">0 Bausteine</span>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <section class="class-header" id="classHeader">
+        <div class="class-title-block">
+          <div class="class-title-line">
+            <h2 id="activeClassName">Klasse</h2>
+            <span class="type-badge" id="activeClassType">Tagesklasse</span>
+          </div>
+          <p id="activeClassSchedule">Industriemechaniker/-in · Berufsschule Pegnitz</p>
+        </div>
+        <div class="class-stats" aria-label="Planungsübersicht">
+          <div><strong id="attendanceCount">0</strong><span>Schultage</span></div>
+          <div><strong id="plannedHours">0</strong><span>Std. geplant</span></div>
+          <div><strong id="coverageValue">0%</strong><span>Abdeckung</span></div>
+        </div>
+        <div class="class-actions">
+          <button class="button secondary" id="editClassBtn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
+            Rhythmus
+          </button>
+          <button class="button primary" id="addModuleBtn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Baustein
+          </button>
+        </div>
+      </section>
+
+      <nav class="view-tabs" aria-label="Ansichten">
+        <button class="tab active" type="button" data-view="plan">Jahresplan</button>
+        <button class="tab" type="button" data-view="fields">Lernfelder</button>
+        <button class="tab" type="button" data-view="overview">Übersicht</button>
+      </nav>
+
+      <section class="view active" id="planView" data-view-panel="plan">
+        <div class="plan-toolbar">
+          <div class="legend" aria-label="Legende">
+            <span><i class="legend-mark present"></i>Unterricht</span>
+            <span><i class="legend-mark absent"></i>nicht in Schule</span>
+            <span><i class="legend-mark holiday"></i>Ausnahme/Ferien</span>
+          </div>
+          <div class="plan-toolbar-actions">
+            <button class="text-button" id="manageExceptionsBtn" type="button">Ausnahmen verwalten</button>
+            <button class="icon-button" id="zoomOutBtn" type="button" aria-label="Ansicht verkleinern" title="Ansicht verkleinern">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M8 11h6M21 21l-4.3-4.3"/></svg>
+            </button>
+            <button class="icon-button" id="zoomInBtn" type="button" aria-label="Ansicht vergrößern" title="Ansicht vergrößern">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M11 8v6M8 11h6M21 21l-4.3-4.3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="timeline-shell" id="timelineShell">
+          <div class="timeline" id="timeline"></div>
+        </div>
+      </section>
+
+      <section class="view" id="fieldsView" data-view-panel="fields">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Curriculum</span>
+            <h2>Lernfelder und Fächer</h2>
+          </div>
+          <button class="button primary" id="addFieldBtn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Lernfeld
+          </button>
+        </div>
+        <div class="field-grid" id="fieldGrid"></div>
+      </section>
+
+      <section class="view" id="overviewView" data-view-panel="overview">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Gesamtstand</span>
+            <h2>Planungsübersicht</h2>
+          </div>
+        </div>
+        <div class="overview-grid" id="overviewGrid"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <aside class="detail-drawer" id="detailDrawer" aria-label="Baustein bearbeiten" aria-hidden="true">
+    <div class="drawer-header">
+      <div>
+        <span class="eyebrow">Planungsbaustein</span>
+        <h2 id="drawerTitle">Baustein bearbeiten</h2>
+      </div>
+      <button class="icon-button" id="closeDrawerBtn" type="button" aria-label="Schließen" title="Schließen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="moduleForm" class="drawer-form">
+      <input type="hidden" id="moduleId">
+      <label>Titel<input id="moduleTitle" required maxlength="80" placeholder="z. B. Kundenauftrag Bremsanlage"></label>
+      <div class="form-row">
+        <label>Fach<select id="moduleField" required></select></label>
+        <label>Farbe<select id="moduleColor">
+          <option value="blue">Blau</option>
+          <option value="amber">Gelb</option>
+          <option value="green">Grün</option>
+          <option value="red">Rot</option>
+          <option value="violet">Violett</option>
+          <option value="teal">Türkis</option>
+        </select></label>
+      </div>
+      <div class="form-row">
+        <label>Startwoche<select id="moduleStart" required></select></label>
+        <label>Dauer (Wochen)<input id="moduleDuration" type="number" min="1" max="18" value="3" required></label>
+      </div>
+      <label>Umfang (Unterrichtsstunden)<input id="moduleHours" type="number" min="1" max="200" value="12" required></label>
+      <label>Kompetenzziele<textarea id="moduleGoals" rows="4" placeholder="Die Schülerinnen und Schüler können …"></textarea></label>
+      <label>Inhalte / Lernsituation<textarea id="moduleContent" rows="4" placeholder="Fachliche Inhalte, Handlungssituation, Produkte …"></textarea></label>
+      <label>Leistungsnachweis<input id="moduleAssessment" maxlength="100" placeholder="z. B. Arbeitsprobe und Fachgespräch"></label>
+      <div class="drawer-footer">
+        <button class="button danger" id="deleteModuleBtn" type="button">Löschen</button>
+        <button class="button primary" type="submit">Übernehmen</button>
+      </div>
+    </form>
+  </aside>
+
+  <dialog id="classDialog" class="dialog">
+    <form method="dialog" id="classForm">
+      <div class="dialog-header">
+        <div><span class="eyebrow">Klassenmodell</span><h2 id="classDialogTitle">Klasse anlegen</h2></div>
+        <button class="icon-button" type="button" data-close-dialog="classDialog" aria-label="Schließen" title="Schließen">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <input type="hidden" id="classId">
+      <label>Klassenbezeichnung<input id="className" required maxlength="30" placeholder="z. B. KFZ 26A"></label>
+      <fieldset>
+        <legend>Unterrichtsmodell</legend>
+        <div class="segmented">
+          <label><input type="radio" name="classType" value="day" checked><span>Tagesklasse</span></label>
+          <label><input type="radio" name="classType" value="block"><span>Blockklasse</span></label>
+        </div>
+      </fieldset>
+      <div id="daySettings" class="model-settings">
+        <p class="form-help">Wählen Sie die Schultage und den Turnus. „A-Woche“ bedeutet jede zweite Schulwoche.</p>
+        <div class="day-patterns" id="dayPatterns"></div>
+      </div>
+      <div id="blockSettings" class="model-settings" hidden>
+        <label>Blockwochen<input id="blockRanges" placeholder="z. B. 36-40, 47-50, 5-9"></label>
+        <p class="form-help">Mehrere Bereiche durch Komma trennen. Der Jahreswechsel ist möglich.</p>
+      </div>
+      <div class="dialog-footer">
+        <button class="button danger" id="deleteClassBtn" type="button">Klasse löschen</button>
+        <button class="button secondary" type="button" data-close-dialog="classDialog">Abbrechen</button>
+        <button class="button primary" type="submit">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="fieldDialog" class="dialog compact">
+    <form method="dialog" id="fieldForm">
+      <div class="dialog-header">
+        <div><span class="eyebrow">Curriculum</span><h2>Lernfeld anlegen</h2></div>
+        <button class="icon-button" type="button" data-close-dialog="fieldDialog" aria-label="Schließen" title="Schließen">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <label>Kürzel<input id="fieldCode" required maxlength="10" placeholder="LF 3"></label>
+      <label>Bezeichnung<input id="fieldName" required maxlength="80" placeholder="Fahrzeugsysteme prüfen"></label>
+      <label>Richtwert (Stunden)<input id="fieldHours" type="number" min="1" max="400" value="80" required></label>
+      <div class="dialog-footer">
+        <button class="button secondary" type="button" data-close-dialog="fieldDialog">Abbrechen</button>
+        <button class="button primary" type="submit">Hinzufügen</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="exceptionDialog" class="dialog wide">
+    <form method="dialog" id="exceptionForm">
+      <div class="dialog-header">
+        <div><span class="eyebrow">Schulkalender</span><h2>Ausnahmen und Ferien</h2></div>
+        <button class="icon-button" type="button" data-close-dialog="exceptionDialog" aria-label="Schließen" title="Schließen">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="form-help">Markieren Sie Wochen, in denen kein regulärer Unterricht stattfindet. Die bayerischen Ferienwochen 2026/27 sind in den Vorlagen vorbelegt.</p>
+      <div class="exception-weeks" id="exceptionWeeks"></div>
+      <div class="dialog-footer">
+        <button class="button secondary" type="button" id="clearExceptionsBtn">Alle entfernen</button>
+        <button class="button primary" type="submit">Übernehmen</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
