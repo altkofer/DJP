@@ -40,6 +40,11 @@
         <button class="icon-button" id="printBtn" type="button" title="Drucken" aria-label="Drucken">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
         </button>
+        <button class="button secondary github-button" id="githubBtn" type="button" title="GitHub-Speicher" aria-label="GitHub-Speicher">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7h-9"/><path d="m16 3 4 4-4 4"/><path d="M4 17h9"/><path d="m8 21-4-4 4-4"/></svg>
+          GitHub
+          <i class="github-state-dot" aria-hidden="true"></i>
+        </button>
         <button class="button secondary" id="exportBtn" type="button">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
           Export
@@ -85,10 +90,6 @@
           <div><strong id="coverageValue">0%</strong><span>Abdeckung</span></div>
         </div>
         <div class="class-actions">
-          <button class="button secondary" id="editClassBtn" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
-            Klasse
-          </button>
           <button class="button secondary" id="addAssessmentBtn" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
             Leistungsnachweis
@@ -310,6 +311,62 @@
         <button class="button secondary" type="button" data-close-dialog="assessmentDialog">Abbrechen</button>
         <button class="button primary" type="submit">Speichern</button>
       </div>
+    </form>
+  </dialog>
+
+  <dialog id="githubDialog" class="dialog compact">
+    <form method="dialog" id="githubForm">
+      <div class="dialog-header">
+        <div><span class="eyebrow">Onlinespeicher</span><h2>GitHub verbinden</h2></div>
+        <button class="icon-button" type="button" data-close-dialog="githubDialog" aria-label="Schließen" title="Schließen">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="github-repository">
+        <span>Repository</span>
+        <strong>altkofer/DJP</strong>
+        <small>main · data/jahresplanung.json</small>
+      </div>
+      <p class="github-public-note"><strong>Öffentlich:</strong> Online gespeicherte Planungsdaten sind im Repository für alle einsehbar.</p>
+
+      <section id="githubSignedOut">
+        <label>Persönlicher GitHub-Schlüssel
+          <input id="githubToken" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+        </label>
+        <p class="github-token-note">Eigentümer: Fine-grained Token mit Contents: Read and write. Eingeladene Mitwirkende: Classic Token mit public_repo. Der Schlüssel bleibt nur in dieser Browsersitzung.</p>
+        <div class="github-token-links">
+          <a class="github-token-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noreferrer">Fine-grained erstellen</a>
+          <a class="github-token-link" href="https://github.com/settings/tokens/new" target="_blank" rel="noreferrer">Classic erstellen</a>
+        </div>
+        <p class="github-connect-error" id="githubConnectError" role="alert" hidden></p>
+        <div class="dialog-footer">
+          <button class="button secondary" type="button" data-close-dialog="githubDialog">Abbrechen</button>
+          <button class="button primary" id="githubConnectBtn" type="button">Verbinden</button>
+        </div>
+      </section>
+
+      <section id="githubSignedIn" hidden>
+        <div class="github-account">
+          <span>Verbunden als</span>
+          <strong id="githubUser">–</strong>
+        </div>
+        <p class="github-remote-status" id="githubRemoteStatus" role="status">Online-Stand wird geprüft.</p>
+        <div class="github-sync-actions">
+          <button class="button secondary" id="githubLoadBtn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            Online laden
+          </button>
+          <button class="button primary" id="githubSaveBtn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21V9"/><path d="m17 14-5-5-5 5"/><path d="M5 3h14"/></svg>
+            Online speichern
+          </button>
+        </div>
+        <div class="dialog-footer github-dialog-footer">
+          <button class="text-button" id="githubDisconnectBtn" type="button">Verbindung trennen</button>
+          <button class="button secondary" type="button" data-close-dialog="githubDialog">Schließen</button>
+        </div>
+      </section>
     </form>
   </dialog>
 

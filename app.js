@@ -15,7 +15,7 @@
   ];
   const FIELD_COLORS = ["#3a75a3", "#d39827", "#3d8761", "#b95b50", "#765ea4", "#287f83"];
   const CLASS_COLORS = ["#3a75a3", "#d39827", "#3d8761", "#b95b50", "#765ea4"];
-  const STATE_VERSION = 4;
+  const STATE_VERSION = 5;
   const LEGACY_EXCEPTION_WEEKS = new Set([34, 35, 36, 37, 45, 52, 53, 1, 6, 12, 13, 20, 21, 31]);
   const DEFAULT_SUBJECT_COLORS = {
     "Fertigungstechnik": "#2f6ea5",
@@ -23,8 +23,23 @@
     "Instandhaltung": "#b34f49",
     "Automatisierungstechnik": "#7560a9",
     "Politik und Gesellschaft": "#b47d19",
-    "Deutsch": "#247d82"
+    "Deutsch": "#247d82",
+    "Religion/Ethik": "#68737d"
   };
+  const GENERAL_EDUCATION_FIELDS = [
+    { id: "field-deutsch", code: "D", area: "Deutsch", name: "Deutsch", targetHours: 36 },
+    { id: "field-pug", code: "PuG", area: "Politik und Gesellschaft", name: "Politik und Gesellschaft", targetHours: 36 },
+    { id: "field-religion", code: "Rel/Eth", area: "Religion/Ethik", name: "Religionslehre / Ethik", targetHours: 36 }
+  ];
+  const GITHUB_CONFIG = {
+    owner: "altkofer",
+    repo: "DJP",
+    branch: "main",
+    path: "data/jahresplanung.json"
+  };
+  const GITHUB_TOKEN_KEY = "djp-github-session-token";
+  const GITHUB_BASE_SHA_KEY = "djp-github-base-sha";
+  const GITHUB_DIRTY_KEY = "djp-github-dirty";
   const BAVARIA_CALENDARS = {
     "2026/27": {
       breaks: [
@@ -125,7 +140,8 @@
       { id: "field-lf12", code: "LF 12", area: "Instandhaltung", name: "Instandhalten von technischen Systemen", targetHours: 70, practicalHours: 14 },
       { id: "field-lf13", code: "LF 13", area: "Automatisierungstechnik", name: "Sicherstellen der Betriebsfähigkeit automatisierter Systeme", targetHours: 84, practicalHours: 28 },
       { id: "field-lf14", code: "LF 14", area: "Fertigungstechnik", name: "Planen und Realisieren technischer Systeme", targetHours: 84, practicalHours: 28 },
-      { id: "field-lf15", code: "LF 15", area: "Fertigungstechnik", name: "Optimieren von technischen Systemen", targetHours: 70, practicalHours: 14 }
+      { id: "field-lf15", code: "LF 15", area: "Fertigungstechnik", name: "Optimieren von technischen Systemen", targetHours: 70, practicalHours: 14 },
+      ...GENERAL_EDUCATION_FIELDS
     ],
     classes: [
       {
@@ -140,7 +156,7 @@
         ],
         blockRanges: "",
         exceptions: [],
-        fieldIds: ["field-lf1", "field-lf2", "field-lf3", "field-lf4"],
+        fieldIds: ["field-lf1", "field-lf2", "field-lf3", "field-lf4", "field-deutsch", "field-pug", "field-religion"],
         modules: [
           { id: "im10-lf1-1", title: "Werkstattauftrag Anschlagwinkel planen", fieldId: "field-lf1", color: "blue", startWeek: 38, duration: 7, hours: 24, goals: "Technische Zeichnungen auswerten, Werkstoffe auswählen und einen sicheren Arbeitsplan erstellen.", content: "Teilzeichnung, Skizze, Maßstab, Allgemeintoleranzen, Werkstoffauswahl, Arbeitsplan und Arbeitsschutz", assessment: "Arbeitsplan mit Zeichnungsanalyse" },
           { id: "im10-lf1-2", title: "Anschlagwinkel manuell fertigen", fieldId: "field-lf1", color: "blue", startWeek: 46, duration: 7, hours: 32, goals: "Handgeführte Werkzeuge fachgerecht einsetzen und Fertigungsschritte selbstständig durchführen.", content: "Anreißen, Körnen, Sägen, Feilen, Bohren, Gewindeherstellung, Biegen und ergonomisches Arbeiten", assessment: "Praktische Arbeitsprobe" },
@@ -168,7 +184,7 @@
         ],
         blockRanges: "",
         exceptions: [],
-        fieldIds: ["field-lf5", "field-lf6", "field-lf7", "field-lf8", "field-lf9", "field-lf11"],
+        fieldIds: ["field-lf5", "field-lf6", "field-lf7", "field-lf8", "field-lf9", "field-lf11", "field-deutsch", "field-pug", "field-religion"],
         modules: [
           { id: "im11-lf5-1", title: "Pumpenwelle konventionell planen", fieldId: "field-lf5", color: "blue", startWeek: 38, duration: 5, hours: 24, goals: "Zeichnung und Auftrag analysieren, Verfahren auswählen und einen vollständigen Arbeitsplan entwickeln.", content: "Technische Informationsquellen, Werkstoffnormung, Drehen, Fräsen, Spannmittel und Bearbeitungsparameter", assessment: "Arbeitsplan mit Verfahrensbegründung" },
           { id: "im11-lf5-2", title: "Einzelteil fertigen und prüfen", fieldId: "field-lf5", color: "blue", startWeek: 46, duration: 6, hours: 24, goals: "Eine Werkzeugmaschine einrichten, das Werkstück fertigen und variable Prüfmerkmale erfassen.", content: "Schneidstoffe, Kühlschmierstoffe, Hauptnutzungszeit, Prüfmittel und Prüfprotokoll", assessment: "Arbeitsprobe mit Prüfprotokoll" },
@@ -199,7 +215,7 @@
         days: [{ day: "do", interval: 1 }],
         blockRanges: "",
         exceptions: [],
-        fieldIds: ["field-lf10", "field-lf12", "field-lf13", "field-lf14", "field-lf15"],
+        fieldIds: ["field-lf10", "field-lf12", "field-lf13", "field-lf14", "field-lf15", "field-deutsch", "field-pug", "field-religion"],
         modules: [
           { id: "im12-lf10-1", title: "Montageauftrag für ein Antriebssystem klären", fieldId: "field-lf10", color: "green", startWeek: 38, duration: 6, hours: 28, goals: "Änderungsauftrag, Gesamtzeichnung und Funktionszusammenhänge analysieren und ein Pflichtenheft erstellen.", content: "Pflichtenheft, Getriebe, Kupplungen, Pumpen, elektrische Antriebe, Kennlinien und Sicherheit", assessment: "Auftragsanalyse und Pflichtenheft" },
           { id: "im12-lf10-2", title: "Technisches System herstellen und montieren", fieldId: "field-lf10", color: "green", startWeek: 2, duration: 7, hours: 28, goals: "Fertigungs- und Montageabläufe planen, Teilsysteme fügen und ergonomisch sicher arbeiten.", content: "Schweißen, Kleben, Montagehilfsmittel, Hebezeuge, Anschlagen von Lasten und Arbeitsplanung", assessment: "Projektauftrag mit Montagedokumentation" },
@@ -231,6 +247,14 @@
   let editingTimetable = {};
   let editingBlockWeeks = new Set();
   let editingClassFieldIds = [];
+  let githubToken = readStorage(sessionStorage, GITHUB_TOKEN_KEY) || "";
+  let githubUser = null;
+  let githubBaseSha = readStorage(localStorage, GITHUB_BASE_SHA_KEY) || "";
+  let githubDirty = readStorage(localStorage, GITHUB_DIRTY_KEY) !== "0";
+  let githubBusy = false;
+  let githubRemoteFile = null;
+  let githubStatusMessage = "Noch nicht mit GitHub verbunden.";
+  let githubStatusKind = "";
 
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -241,10 +265,31 @@
   const weekIndex = week => WEEK_SEQUENCE.indexOf(Number(week));
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
+  function readStorage(storage, key) {
+    try {
+      return storage.getItem(key);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function writeStorage(storage, key, value) {
+    try {
+      if (value === null) storage.removeItem(key);
+      else storage.setItem(key, value);
+    } catch (error) {
+      console.warn("Browserspeicher ist nicht verfügbar.", error);
+    }
+  }
+
   function loadState() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (saved && Array.isArray(saved.classes) && Array.isArray(saved.fields)) return migrateState(saved);
+      if (saved && Array.isArray(saved.classes) && Array.isArray(saved.fields)) {
+        const migrated = migrateState(saved);
+        if (Number(saved.version || 1) !== STATE_VERSION) localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+        return migrated;
+      }
     } catch (error) {
       console.warn("Gespeicherte Planung konnte nicht geladen werden.", error);
     }
@@ -257,6 +302,12 @@
     data.version = STATE_VERSION;
     data.ui = { calendarDensity: "compact", ...(data.ui || {}) };
     data.subjectColors = { ...DEFAULT_SUBJECT_COLORS, ...(data.subjectColors || {}) };
+    const generalFieldIds = GENERAL_EDUCATION_FIELDS.map(template => {
+      const existing = data.fields.find(field => field.id === template.id || field.area === template.area);
+      if (existing) return existing.id;
+      data.fields.push(clone(template));
+      return template.id;
+    });
     data.fields.forEach((field, index) => {
       field.area = field.area || "Sonstiges";
       if (!data.subjectColors[field.area]) data.subjectColors[field.area] = FIELD_COLORS[index % FIELD_COLORS.length];
@@ -272,8 +323,9 @@
       clazz.blockRanges = compactBlockWeeks(clazz.blockWeeks);
       clazz.timetable = clazz.timetable && typeof clazz.timetable === "object" ? Object.fromEntries(Object.entries(clazz.timetable).map(([day, entries]) => [day, (entries || []).map((entry, index) => ({ id: entry.id || `lesson-${clazz.id}-${day}-${index}`, from: Number(entry.from || 1), to: Number(entry.to || entry.from || 1), fieldId: entry.fieldId || "" }))])) : {};
       clazz.assessments = Array.isArray(clazz.assessments) ? clazz.assessments.map((assessment, index) => ({ id: assessment.id || `assessment-${clazz.id}-${index}`, type: "Schulaufgabe", notes: "", ...assessment })) : [];
+      clazz.fieldIds = [...new Set([...(Array.isArray(clazz.fieldIds) ? clazz.fieldIds : []), ...generalFieldIds])];
       clazz.exceptions = (clazz.exceptions || []).map(Number);
-      if (previousVersion < STATE_VERSION) clazz.exceptions = clazz.exceptions.filter(week => !LEGACY_EXCEPTION_WEEKS.has(week));
+      if (previousVersion < 4) clazz.exceptions = clazz.exceptions.filter(week => !LEGACY_EXCEPTION_WEEKS.has(week));
       clazz.modules = (clazz.modules || []).map(module => ({
         status: "not-started",
         actualHours: 0,
@@ -300,6 +352,7 @@
     if (undoStack.length > 40) undoStack.shift();
     redoStack = [];
     change();
+    markGithubDirty();
     saveState();
     render();
     if (message) showToast(message);
@@ -309,8 +362,247 @@
     if (!from.length) return;
     to.push(clone(state));
     state = from.pop();
+    markGithubDirty();
     saveState();
     render();
+  }
+
+  function markGithubDirty() {
+    githubDirty = true;
+    writeStorage(localStorage, GITHUB_DIRTY_KEY, "1");
+    if (githubUser && !githubBusy) {
+      githubStatusMessage = "Lokale Änderungen warten auf das Online-Speichern.";
+      githubStatusKind = "warning";
+    }
+    renderGithubStatus();
+  }
+
+  function setGithubClean(sha) {
+    githubDirty = false;
+    githubBaseSha = sha || "";
+    writeStorage(localStorage, GITHUB_DIRTY_KEY, "0");
+    writeStorage(localStorage, GITHUB_BASE_SHA_KEY, githubBaseSha || null);
+  }
+
+  function setGithubStatus(message, kind = "") {
+    githubStatusMessage = message;
+    githubStatusKind = kind;
+    renderGithubStatus();
+  }
+
+  function renderGithubStatus() {
+    const button = $("#githubBtn");
+    if (!button) return;
+    button.classList.toggle("connected", Boolean(githubUser));
+    button.classList.toggle("dirty", githubDirty);
+    button.classList.toggle("sync-error", githubStatusKind === "error");
+    button.title = githubUser ? githubStatusMessage : "GitHub-Speicher verbinden";
+
+    const signedOut = $("#githubSignedOut");
+    const signedIn = $("#githubSignedIn");
+    if (!signedOut || !signedIn) return;
+    signedOut.hidden = Boolean(githubUser);
+    signedIn.hidden = !githubUser;
+    $("#githubUser").textContent = githubUser ? `@${githubUser.login}` : "–";
+    const status = $("#githubRemoteStatus");
+    status.textContent = githubBusy ? "GitHub wird geprüft …" : githubStatusMessage;
+    status.className = `github-remote-status${githubStatusKind ? ` ${githubStatusKind}` : ""}`;
+    $("#githubConnectBtn").disabled = githubBusy;
+    $("#githubLoadBtn").disabled = githubBusy || !githubUser;
+    $("#githubSaveBtn").disabled = githubBusy || !githubUser;
+  }
+
+  function githubContentsEndpoint() {
+    const path = GITHUB_CONFIG.path.split("/").map(encodeURIComponent).join("/");
+    return `/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}`;
+  }
+
+  async function githubRequest(path, { method = "GET", body = null, token = githubToken, allowNotFound = false } = {}) {
+    const headers = {
+      "Accept": "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28"
+    };
+    if (token) headers.Authorization = `Bearer ${token}`;
+    if (body) headers["Content-Type"] = "application/json";
+    const response = await fetch(`https://api.github.com${path}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : null
+    });
+    if (allowNotFound && response.status === 404) return null;
+    let payload = null;
+    try {
+      payload = await response.json();
+    } catch (error) {
+      payload = null;
+    }
+    if (!response.ok) {
+      const requestError = new Error(payload?.message || `GitHub-Fehler ${response.status}`);
+      requestError.status = response.status;
+      throw requestError;
+    }
+    return payload;
+  }
+
+  function encodeGithubContent(value) {
+    const bytes = new TextEncoder().encode(value);
+    let binary = "";
+    for (let index = 0; index < bytes.length; index += 1) binary += String.fromCharCode(bytes[index]);
+    return btoa(binary);
+  }
+
+  function decodeGithubContent(value) {
+    const binary = atob(String(value || "").replace(/\s/g, ""));
+    const bytes = Uint8Array.from(binary, character => character.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
+
+  async function getGithubRemoteFile(token = githubToken) {
+    return githubRequest(`${githubContentsEndpoint()}?ref=${encodeURIComponent(GITHUB_CONFIG.branch)}`, {
+      token,
+      allowNotFound: true
+    });
+  }
+
+  function updateGithubRemoteSummary(remote) {
+    githubRemoteFile = remote;
+    if (!remote) {
+      setGithubStatus("Noch kein gemeinsamer Online-Stand. Beim Speichern wird er angelegt.", "warning");
+      return;
+    }
+    if (!githubBaseSha) {
+      setGithubStatus("Ein Online-Stand ist vorhanden. Bitte vor dem ersten Speichern online laden.", "warning");
+      return;
+    }
+    if (remote.sha !== githubBaseSha) {
+      setGithubStatus("Der Online-Stand wurde seit dem letzten Laden geändert. Bitte zuerst online laden.", "error");
+      return;
+    }
+    if (githubDirty) {
+      setGithubStatus("Lokale Änderungen warten auf das Online-Speichern.", "warning");
+      return;
+    }
+    setGithubStatus("Lokaler und gemeinsamer Online-Stand sind aktuell.", "success");
+  }
+
+  function githubErrorText(error) {
+    if (error?.status === 401) return "Der GitHub-Schlüssel ist ungültig oder abgelaufen.";
+    if (error?.status === 403) return error.message?.includes("keine Schreibrechte") ? error.message : "Für dieses Repository fehlt die Schreibberechtigung.";
+    if (error?.status === 409 || error?.status === 422) return "GitHub hat einen Versionskonflikt gemeldet. Bitte zuerst online laden.";
+    if (error instanceof TypeError) return "GitHub ist momentan nicht erreichbar.";
+    return error?.message || "Die GitHub-Aktion ist fehlgeschlagen.";
+  }
+
+  async function connectGithub(useStoredToken = false) {
+    const enteredToken = $("#githubToken").value.trim();
+    const candidate = useStoredToken ? githubToken : enteredToken || githubToken;
+    const errorBox = $("#githubConnectError");
+    if (!candidate) {
+      errorBox.textContent = "Bitte einen persönlichen GitHub-Schlüssel eintragen.";
+      errorBox.hidden = false;
+      return;
+    }
+    githubBusy = true;
+    errorBox.hidden = true;
+    renderGithubStatus();
+    try {
+      const user = await githubRequest("/user", { token: candidate });
+      const repository = await githubRequest(`/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}`, { token: candidate });
+      if (!repository.permissions?.push) throw Object.assign(new Error("Das GitHub-Konto hat keine Schreibrechte für altkofer/DJP."), { status: 403 });
+      const remote = await getGithubRemoteFile(candidate);
+      githubToken = candidate;
+      githubUser = user;
+      writeStorage(sessionStorage, GITHUB_TOKEN_KEY, githubToken);
+      $("#githubToken").value = "";
+      updateGithubRemoteSummary(remote);
+      showToast(`Mit GitHub als @${user.login} verbunden`);
+    } catch (error) {
+      const message = githubErrorText(error);
+      if (error?.status === 401) {
+        githubToken = "";
+        writeStorage(sessionStorage, GITHUB_TOKEN_KEY, null);
+      }
+      githubUser = null;
+      errorBox.textContent = message;
+      errorBox.hidden = false;
+      githubStatusMessage = message;
+      githubStatusKind = "error";
+    } finally {
+      githubBusy = false;
+      renderGithubStatus();
+    }
+  }
+
+  function disconnectGithub() {
+    githubToken = "";
+    githubUser = null;
+    githubRemoteFile = null;
+    writeStorage(sessionStorage, GITHUB_TOKEN_KEY, null);
+    $("#githubToken").value = "";
+    $("#githubConnectError").hidden = true;
+    setGithubStatus("Noch nicht mit GitHub verbunden.");
+    showToast("GitHub-Verbindung getrennt");
+  }
+
+  async function loadStateFromGithub() {
+    if (!githubUser || githubBusy) return;
+    githubBusy = true;
+    renderGithubStatus();
+    try {
+      const remote = await getGithubRemoteFile();
+      if (!remote) {
+        githubRemoteFile = null;
+        setGithubStatus("Noch kein gemeinsamer Online-Stand vorhanden.", "warning");
+        return;
+      }
+      const imported = JSON.parse(decodeGithubContent(remote.content));
+      if (!Array.isArray(imported.classes) || !Array.isArray(imported.fields)) throw new Error("Die Online-Datei enthält keine gültige Jahresplanung.");
+      undoStack.push(clone(state));
+      if (undoStack.length > 40) undoStack.shift();
+      redoStack = [];
+      state = migrateState(imported);
+      setGithubClean(remote.sha);
+      githubRemoteFile = remote;
+      githubStatusMessage = "Online-Stand wurde geladen. Lokaler und gemeinsamer Stand sind aktuell.";
+      githubStatusKind = "success";
+      saveState();
+      render();
+      showToast("Online-Stand geladen");
+    } catch (error) {
+      setGithubStatus(githubErrorText(error), "error");
+    } finally {
+      githubBusy = false;
+      renderGithubStatus();
+    }
+  }
+
+  async function saveStateToGithub() {
+    if (!githubUser || githubBusy) return;
+    githubBusy = true;
+    renderGithubStatus();
+    try {
+      const remote = await getGithubRemoteFile();
+      if (remote && !githubBaseSha) throw Object.assign(new Error("Vor dem ersten Speichern bitte den vorhandenen Online-Stand laden."), { status: 409 });
+      if (remote && githubBaseSha && remote.sha !== githubBaseSha) throw Object.assign(new Error("Der Online-Stand ist neuer."), { status: 409 });
+      if (!remote && githubBaseSha) throw Object.assign(new Error("Die Online-Datei wurde zwischenzeitlich entfernt."), { status: 409 });
+
+      const body = {
+        message: `DJP ${state.schoolYear} online gespeichert`,
+        content: encodeGithubContent(JSON.stringify(state, null, 2)),
+        branch: GITHUB_CONFIG.branch
+      };
+      if (remote?.sha) body.sha = remote.sha;
+      const saved = await githubRequest(githubContentsEndpoint(), { method: "PUT", body });
+      githubRemoteFile = saved.content;
+      setGithubClean(saved.content?.sha || "");
+      setGithubStatus("Gemeinsamer Online-Stand wurde erfolgreich gespeichert.", "success");
+      showToast("Planung online gespeichert");
+    } catch (error) {
+      setGithubStatus(githubErrorText(error), "error");
+    } finally {
+      githubBusy = false;
+      renderGithubStatus();
+    }
   }
 
   function parseBlockRanges(text) {
@@ -521,6 +813,7 @@
     renderTimeline();
     renderFields();
     renderOverview();
+    renderGithubStatus();
     $("#undoBtn").disabled = !undoStack.length;
     $("#redoBtn").disabled = !redoStack.length;
   }
@@ -529,20 +822,23 @@
     const list = $("#classList");
     list.innerHTML = "";
     state.classes.forEach(clazz => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = `class-item${clazz.id === state.selectedClassId ? " active" : ""}`;
-      button.style.setProperty("--class-color", clazz.color || CLASS_COLORS[0]);
-      button.innerHTML = `
+      const item = document.createElement("div");
+      item.className = `class-item${clazz.id === state.selectedClassId ? " active" : ""}`;
+      item.style.setProperty("--class-color", clazz.color || CLASS_COLORS[0]);
+      item.innerHTML = `
         <i class="class-color" aria-hidden="true"></i>
-        <span><strong>${escapeHtml(clazz.name)}</strong><span>${clazz.type === "block" ? "Blockklasse" : "Tagesklasse"}</span></span>
+        <button class="class-select" type="button"><strong>${escapeHtml(clazz.name)}</strong><span>${clazz.type === "block" ? "Blockklasse" : "Tagesklasse"}</span></button>
+        <button class="class-edit" type="button" title="${escapeHtml(clazz.name)} bearbeiten" aria-label="${escapeHtml(clazz.name)} bearbeiten">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
+        </button>
         <i class="class-modules">${clazz.modules.length}</i>`;
-      button.addEventListener("click", () => {
+      $(".class-select", item).addEventListener("click", () => {
         state.selectedClassId = clazz.id;
         saveState();
         render();
       });
-      list.append(button);
+      $(".class-edit", item).addEventListener("click", () => openClassDialog(clazz));
+      list.append(item);
     });
     const moduleCount = state.classes.reduce((sum, clazz) => sum + clazz.modules.length, 0);
     $("#classCount").textContent = `${state.classes.length} ${state.classes.length === 1 ? "Klasse" : "Klassen"}`;
@@ -630,6 +926,7 @@
       const subjectAssessments = (clazz.assessments || []).filter(assessment => assessment.fieldId === field.id);
       const lanes = assignCalendarLanes(clazz, subjectModules, subjectAssessments);
       row.style.setProperty("--row-lanes", lanes.laneCount);
+      attachRowDropTarget(row, field.id);
       const planned = subjectModules.reduce((sum, module) => sum + Number(module.hours || 0), 0);
       const actual = subjectModules.reduce((sum, module) => sum + actualModuleHours(module), 0);
       const available = timetableHours(clazz, field.id);
@@ -649,7 +946,6 @@
         gridCell.style.gridColumn = `${index + 2}`;
         gridCell.style.gridRow = `1 / span ${lanes.laneCount}`;
         gridCell.title = `${info.freeLabels.length ? info.freeLabels.join(", ") + " · " : ""}KW ${week}: Doppelklick zum Anlegen`;
-        attachDropTarget(gridCell, week, field.id);
         gridCell.addEventListener("dblclick", () => openModuleDrawer(null, field.id, week));
         row.append(gridCell);
       });
@@ -707,32 +1003,78 @@
     });
   }
 
+  function clearDropTargets() {
+    $$(".drop-target", $("#timeline")).forEach(target => target.classList.remove("drop-target"));
+  }
+
+  function weekFromRowPointer(row, clientX) {
+    const cells = $$(".grid-cell", row);
+    const cell = cells.find(item => {
+      const rect = item.getBoundingClientRect();
+      return clientX >= rect.left && clientX < rect.right;
+    });
+    return cell ? Number(cell.dataset.week) : null;
+  }
+
+  function highlightRowDropTarget(row, week) {
+    clearDropTargets();
+    const target = $(`.grid-cell[data-week="${week}"]`, row);
+    if (target) target.classList.add("drop-target");
+  }
+
+  function moveDroppedItem(dataTransfer, week, fieldId = null) {
+    const [kind, itemId] = dataTransfer.getData("text/plain").split(":");
+    const clazz = activeClass();
+    if (kind === "assessment") {
+      const assessment = (clazz.assessments || []).find(item => item.id === itemId);
+      if (!assessment) return;
+      commit(() => {
+        assessment.week = Number(week);
+        if (fieldId) assessment.fieldId = fieldId;
+      }, `Leistungsnachweis nach KW ${week} verschoben`);
+      return;
+    }
+    const module = clazz.modules.find(item => item.id === itemId);
+    if (!module) return;
+    commit(() => {
+      module.startWeek = Number(week);
+      if (fieldId) module.fieldId = fieldId;
+    }, `Baustein nach KW ${week} verschoben`);
+  }
+
+  function attachRowDropTarget(row, fieldId) {
+    row.addEventListener("dragover", event => {
+      const week = weekFromRowPointer(row, event.clientX);
+      if (week === null) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      highlightRowDropTarget(row, week);
+    });
+    row.addEventListener("dragleave", event => {
+      if (!row.contains(event.relatedTarget)) clearDropTargets();
+    });
+    row.addEventListener("drop", event => {
+      const week = weekFromRowPointer(row, event.clientX);
+      if (week === null) return;
+      event.preventDefault();
+      event.stopPropagation();
+      clearDropTargets();
+      moveDroppedItem(event.dataTransfer, week, fieldId);
+    });
+  }
+
   function attachDropTarget(element, week, fieldId = null) {
     element.addEventListener("dragover", event => {
       event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      clearDropTargets();
       element.classList.add("drop-target");
     });
     element.addEventListener("dragleave", () => element.classList.remove("drop-target"));
     element.addEventListener("drop", event => {
       event.preventDefault();
-      element.classList.remove("drop-target");
-      const [kind, itemId] = event.dataTransfer.getData("text/plain").split(":");
-      const clazz = activeClass();
-      if (kind === "assessment") {
-        const assessment = (clazz.assessments || []).find(item => item.id === itemId);
-        if (!assessment) return;
-        commit(() => {
-          assessment.week = Number(week);
-          if (fieldId) assessment.fieldId = fieldId;
-        }, `Leistungsnachweis nach KW ${week} verschoben`);
-        return;
-      }
-      const module = clazz.modules.find(item => item.id === itemId);
-      if (!module) return;
-      commit(() => {
-        module.startWeek = Number(week);
-        if (fieldId) module.fieldId = fieldId;
-      }, `Baustein nach KW ${week} verschoben`);
+      clearDropTargets();
+      moveDroppedItem(event.dataTransfer, week, fieldId);
     });
   }
 
@@ -1032,8 +1374,17 @@
   $("#undoBtn").addEventListener("click", () => restore(undoStack, redoStack));
   $("#redoBtn").addEventListener("click", () => restore(redoStack, undoStack));
   $("#printBtn").addEventListener("click", () => window.print());
+  $("#githubBtn").addEventListener("click", () => {
+    $("#githubDialog").showModal();
+    renderGithubStatus();
+    if (githubToken && !githubUser) connectGithub(true);
+    else if (!githubUser) window.setTimeout(() => $("#githubToken").focus(), 50);
+  });
+  $("#githubConnectBtn").addEventListener("click", () => connectGithub(false));
+  $("#githubLoadBtn").addEventListener("click", loadStateFromGithub);
+  $("#githubSaveBtn").addEventListener("click", saveStateToGithub);
+  $("#githubDisconnectBtn").addEventListener("click", disconnectGithub);
   $("#addClassBtn").addEventListener("click", () => openClassDialog());
-  $("#editClassBtn").addEventListener("click", () => openClassDialog(activeClass()));
   $("#addModuleBtn").addEventListener("click", () => openModuleDrawer());
   $("#addAssessmentBtn").addEventListener("click", () => openAssessmentDialog());
   $("#addFieldBtn").addEventListener("click", () => {
@@ -1241,6 +1592,8 @@
     }
     event.target.value = "";
   });
+
+  document.addEventListener("dragend", clearDropTargets);
 
   document.addEventListener("keydown", event => {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z" && !event.shiftKey) {

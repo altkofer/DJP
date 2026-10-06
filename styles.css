@@ -69,6 +69,11 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
 .button.primary { background: var(--navy); color: #fff; }
 .button.primary:hover { background: var(--navy-2); }
 .topbar .button.secondary { background: rgba(255,255,255,.1); color: #fff; border-color: rgba(255,255,255,.2); }
+.github-button { position: relative; }
+.github-state-dot { width: 7px; height: 7px; border-radius: 50%; background: #9aabb5; }
+.github-button.connected .github-state-dot { background: #62bd88; }
+.github-button.dirty .github-state-dot { background: var(--accent); }
+.github-button.sync-error .github-state-dot { background: #df776e; }
 .button.secondary { background: #fff; color: var(--ink); border: 1px solid var(--line-strong); }
 .button.secondary:hover { background: #f4f6f7; }
 .button.danger { background: #fff; color: var(--danger); border: 1px solid #d9aaa5; margin-right: auto; }
@@ -87,13 +92,17 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
 h1, h2, h3, p { margin-top: 0; }
 .sidebar h1 { font-size: 22px; margin-bottom: 0; letter-spacing: 0; }
 .class-list { display: grid; gap: 3px; padding: 0 9px; }
-.class-item { width: 100%; display: grid; grid-template-columns: 9px 1fr auto; gap: 10px; align-items: center; border: 1px solid transparent; background: transparent; text-align: left; padding: 10px 9px; border-radius: 4px; cursor: pointer; }
+.class-item { width: 100%; display: grid; grid-template-columns: 9px minmax(0, 1fr) 28px auto; gap: 8px; align-items: center; border: 1px solid transparent; background: transparent; text-align: left; padding: 10px 9px; border-radius: 4px; }
 .class-item:hover { background: #edf2f5; }
 .class-item.active { background: #e3ebf0; border-color: #c2d0d9; }
 .class-item .class-color { width: 8px; height: 32px; border-radius: 2px; background: var(--class-color, var(--navy)); }
 .class-item strong, .class-item span { display: block; letter-spacing: 0; }
 .class-item strong { font-size: 14px; }
 .class-item span { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.class-select { min-width: 0; border: 0; background: transparent; color: var(--ink); text-align: left; padding: 0; cursor: pointer; }
+.class-edit { width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 3px; background: transparent; color: #637582; cursor: pointer; }
+.class-edit:hover, .class-edit:focus-visible { background: #fff; color: var(--navy); box-shadow: inset 0 0 0 1px var(--line-strong); outline: none; }
+.class-edit svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .class-item .class-modules { font-size: 12px; color: var(--muted); border: 1px solid var(--line); min-width: 28px; height: 24px; display: grid; place-items: center; border-radius: 3px; }
 .sidebar-summary { margin-top: auto; border-top: 1px solid var(--line); padding: 14px 17px 18px; display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; }
 
@@ -249,6 +258,26 @@ legend { font-size: 13px; font-weight: 650; margin-bottom: 7px; }
 .segmented label + label span { border-left: 1px solid var(--line-strong); }
 .segmented input:checked + span { background: var(--navy); color: #fff; }
 .form-help { color: var(--muted); font-size: 13px; margin: 0 0 11px; font-weight: 400; }
+.github-repository { display: grid; grid-template-columns: 1fr auto; gap: 2px 14px; padding: 2px 0 13px; border-bottom: 1px solid var(--line); }
+.github-repository span, .github-account span { color: var(--muted); font-size: 12px; }
+.github-repository strong { text-align: right; font-size: 14px; }
+.github-repository small { grid-column: 1 / -1; color: var(--muted); font-size: 12px; text-align: right; }
+.github-public-note { margin: -4px 0 0; color: #6f5318; font-size: 12px; }
+.github-public-note strong { color: #5c4311; }
+#githubSignedOut, #githubSignedIn { display: grid; gap: 13px; }
+.github-token-note { margin: -4px 0 0; color: var(--muted); font-size: 12px; }
+.github-token-links { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.github-token-link { width: fit-content; color: var(--navy-2); font-size: 13px; font-weight: 700; }
+.github-connect-error { margin: 0; padding: 9px 10px; border-left: 4px solid var(--danger); background: #fbefed; color: #7e3028; font-size: 13px; }
+.github-account { display: flex; align-items: center; justify-content: space-between; padding-bottom: 11px; border-bottom: 1px solid var(--line); }
+.github-account strong { font-size: 14px; }
+.github-remote-status { min-height: 42px; margin: 0; padding: 10px 11px; border-left: 4px solid var(--line-strong); background: #f4f6f7; color: var(--muted); font-size: 13px; }
+.github-remote-status.success { border-color: var(--success); color: #235b41; background: #edf6f1; }
+.github-remote-status.warning { border-color: var(--accent); color: #6f5318; background: #faf5e9; }
+.github-remote-status.error { border-color: var(--danger); color: #7e3028; background: #fbefed; }
+.github-sync-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.github-dialog-footer { align-items: center; border-top: 1px solid var(--line); margin-top: 2px; padding-top: 13px; }
+.github-dialog-footer .text-button { margin-right: auto; }
 .day-patterns { display: grid; gap: 7px; }
 .day-pattern { display: grid; grid-template-columns: 26px 1fr 140px; gap: 9px; align-items: center; padding: 7px 9px; border: 1px solid var(--line); }
 .day-pattern input[type="checkbox"] { width: 18px; min-height: 18px; accent-color: var(--navy); }
@@ -307,6 +336,8 @@ legend { font-size: 13px; font-weight: 650; margin-bottom: 7px; }
   .topbar-center { display: none; }
   .top-actions { padding-right: 8px; }
   .top-actions .icon-button:nth-of-type(-n+3), .top-actions .button { display: none; }
+  .top-actions #githubBtn { width: 36px; padding: 0; display: inline-grid; grid-template-columns: 1fr; font-size: 0; }
+  .top-actions #githubBtn .github-state-dot { position: absolute; right: 5px; bottom: 5px; }
   .sidebar { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); }
   .sidebar-heading { padding: 12px 14px 8px; align-items: center; }
   .sidebar h1 { font-size: 18px; }
