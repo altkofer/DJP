@@ -465,13 +465,41 @@
     return current.year < startYear || (current.year === startYear && current.week < 34) ? -1 : WEEK_SEQUENCE.length;
   }
 
-  function expectedModuleHours(module) {
-    const nowIndex = currentTimelineIndex();
+  function moduleCalendarPlacement(clazz, module) {
     const start = weekIndex(module.startWeek);
+    const instructionWeeks = Math.max(1, Number(module.duration || 1));
+    if (start < 0) return { start, end: start, span: 1, skippedWeeks: 0 };
+
+    let completedInstructionWeeks = 0;
+    let end = start;
+    for (let index = start; index < WEEK_SEQUENCE.length; index += 1) {
+      end = index;
+      const info = weekCalendarInfo(clazz, WEEK_SEQUENCE[index], index);
+      if (info.status !== "holiday") completedInstructionWeeks += 1;
+      if (completedInstructionWeeks >= instructionWeeks) break;
+    }
+
+    const span = Math.max(1, end - start + 1);
+    return {
+      start,
+      end,
+      span,
+      skippedWeeks: Math.max(0, span - completedInstructionWeeks)
+    };
+  }
+
+  function expectedModuleHours(module, clazz = activeClass()) {
+    const nowIndex = currentTimelineIndex();
+    const placement = moduleCalendarPlacement(clazz, module);
+    const start = placement.start;
     const duration = Math.max(1, Number(module.duration || 1));
     if (start < 0 || nowIndex < start) return 0;
-    if (nowIndex >= start + duration - 1) return Number(module.hours || 0);
-    return Number(module.hours || 0) * ((nowIndex - start + 1) / duration);
+    if (nowIndex >= placement.end) return Number(module.hours || 0);
+    let elapsedInstructionWeeks = 0;
+    for (let index = start; index <= Math.min(nowIndex, placement.end); index += 1) {
+      if (weekCalendarInfo(clazz, WEEK_SEQUENCE[index], index).status !== "holiday") elapsedInstructionWeeks += 1;
+    }
+    return Number(module.hours || 0) * (elapsedInstructionWeeks / duration);
   }
 
   function actualModuleHours(module) {
@@ -480,7 +508,7 @@
 
   function progressForClass(clazz) {
     const planned = clazz.modules.reduce((sum, module) => sum + Number(module.hours || 0), 0);
-    const expected = clazz.modules.reduce((sum, module) => sum + expectedModuleHours(module), 0);
+    const expected = clazz.modules.reduce((sum, module) => sum + expectedModuleHours(module, clazz), 0);
     const actual = clazz.modules.reduce((sum, module) => sum + actualModuleHours(module), 0);
     return { planned, expected: Math.round(expected), actual, variance: Math.round(actual - expected) };
   }
@@ -537,9 +565,12 @@
     $("#coverageValue").textContent = `${target ? Math.round(progress.planned / target * 100) : 0}%`;
   }
 
-  function assignCalendarLanes(modules, assessments) {
+  function assignCalendarLanes(clazz, modules, assessments) {
     const items = [
-      ...modules.map(module => ({ kind: "module", id: module.id, start: weekIndex(module.startWeek), end: weekIndex(module.startWeek) + Math.max(1, Number(module.duration || 1)) - 1 })),
+      ...modules.map(module => {
+        const placement = moduleCalendarPlacement(clazz, module);
+        return { kind: "module", id: module.id, start: placement.start, end: placement.end };
+      }),
       ...assessments.map(assessment => ({ kind: "assessment", id: assessment.id, start: weekIndex(assessment.week), end: weekIndex(assessment.week) }))
     ].filter(item => item.start >= 0).sort((a, b) => a.start - b.start || b.end - a.end);
     const laneEnds = [];
@@ -597,7 +628,7 @@
       row.className = "subject-row";
       const subjectModules = clazz.modules.filter(module => module.fieldId === field.id);
       const subjectAssessments = (clazz.assessments || []).filter(assessment => assessment.fieldId === field.id);
-      const lanes = assignCalendarLanes(subjectModules, subjectAssessments);
+      const lanes = assignCalendarLanes(clazz, subjectModules, subjectAssessments);
       row.style.setProperty("--row-lanes", lanes.laneCount);
       const planned = subjectModules.reduce((sum, module) => sum + Number(module.hours || 0), 0);
       const actual = subjectModules.reduce((sum, module) => sum + actualModuleHours(module), 0);
@@ -624,17 +655,22 @@
       });
 
       subjectModules.forEach(module => {
-        const start = weekIndex(module.startWeek);
+        const placement = moduleCalendarPlacement(clazz, module);
+        const start = placement.start;
         if (start < 0) return;
         const card = document.createElement("article");
         card.className = `module-card status-${module.status || "not-started"}`;
         card.dataset.moduleId = module.id;
         card.draggable = true;
         card.style.setProperty("--module-color", fieldColor(field));
-        card.style.gridColumn = `${start + 2} / span ${clamp(Number(module.duration) || 1, 1, WEEK_SEQUENCE.length - start)}`;
+        card.style.gridColumn = `${start + 2} / span ${clamp(placement.span, 1, WEEK_SEQUENCE.length - start)}`;
         card.style.gridRow = `${lanes.laneByItem.get(`module:${module.id}`) + 1}`;
+        const extensionLabel = placement.skippedWeeks ? ` · +${placement.skippedWeeks} freie Wo.` : "";
+        card.title = placement.skippedWeeks
+          ? `${module.duration} Unterrichtswochen, automatisch um ${placement.skippedWeeks} freie ${placement.skippedWeeks === 1 ? "Woche" : "Wochen"} verlängert`
+          : `${module.duration} Unterrichtswochen`;
         card.innerHTML = detailMode
-          ? `<strong>${escapeHtml(module.title)}</strong><span class="module-goals"><b>Lernziele:</b> ${escapeHtml(module.goals || "Noch nicht eingetragen")}</span><span><b>Inhalte:</b> ${escapeHtml(module.content || "Noch nicht eingetragen")}</span><small><i class="status-dot"></i>${moduleStatusLabel(module.status)} · ${actualModuleHours(module)} / ${module.hours} Ist-Std. · ${module.duration} Wo.</small>`
+          ? `<strong>${escapeHtml(module.title)}</strong><span class="module-goals"><b>Lernziele:</b> ${escapeHtml(module.goals || "Noch nicht eingetragen")}</span><span><b>Inhalte:</b> ${escapeHtml(module.content || "Noch nicht eingetragen")}</span><small><i class="status-dot"></i>${moduleStatusLabel(module.status)} · ${actualModuleHours(module)} / ${module.hours} Ist-Std. · ${module.duration} U.-Wo.${extensionLabel}</small>`
           : `<strong>${escapeHtml(module.title)}</strong><small><i class="status-dot"></i>${actualModuleHours(module)} / ${module.hours} Std. · ${moduleStatusLabel(module.status)}</small>`;
         card.addEventListener("click", event => {
           event.stopPropagation();
@@ -728,7 +764,9 @@
     const assessments = state.classes.flatMap(clazz => clazz.assessments || []);
     const hours = modules.reduce((sum, module) => sum + Number(module.hours || 0), 0);
     const actual = modules.reduce((sum, module) => sum + actualModuleHours(module), 0);
-    const expected = Math.round(modules.reduce((sum, module) => sum + expectedModuleHours(module), 0));
+    const expected = Math.round(state.classes.reduce((classSum, clazz) => (
+      classSum + clazz.modules.reduce((moduleSum, module) => moduleSum + expectedModuleHours(module, clazz), 0)
+    ), 0));
     const variance = actual - expected;
     const dayClasses = state.classes.filter(clazz => clazz.type === "day").length;
     grid.innerHTML = `
