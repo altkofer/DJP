@@ -15,9 +15,99 @@
   ];
   const FIELD_COLORS = ["#3a75a3", "#d39827", "#3d8761", "#b95b50", "#765ea4", "#287f83"];
   const CLASS_COLORS = ["#3a75a3", "#d39827", "#3d8761", "#b95b50", "#765ea4"];
+  const STATE_VERSION = 4;
+  const LEGACY_EXCEPTION_WEEKS = new Set([34, 35, 36, 37, 45, 52, 53, 1, 6, 12, 13, 20, 21, 31]);
+  const DEFAULT_SUBJECT_COLORS = {
+    "Fertigungstechnik": "#2f6ea5",
+    "Bauelemente": "#32805f",
+    "Instandhaltung": "#b34f49",
+    "Automatisierungstechnik": "#7560a9",
+    "Politik und Gesellschaft": "#b47d19",
+    "Deutsch": "#247d82"
+  };
+  const BAVARIA_CALENDARS = {
+    "2026/27": {
+      breaks: [
+        { from: "2026-08-03", to: "2026-09-14", name: "Sommerferien" },
+        { from: "2026-11-02", to: "2026-11-06", name: "Allerheiligenferien" },
+        { from: "2026-12-24", to: "2027-01-08", name: "Weihnachtsferien" },
+        { from: "2027-02-08", to: "2027-02-12", name: "Frühjahrsferien" },
+        { from: "2027-03-22", to: "2027-04-02", name: "Osterferien" },
+        { from: "2027-05-18", to: "2027-05-28", name: "Pfingstferien" },
+        { from: "2027-08-02", to: "2027-09-13", name: "Sommerferien" }
+      ],
+      days: {
+        "2026-10-03": "Tag der Deutschen Einheit",
+        "2026-11-01": "Allerheiligen",
+        "2026-11-18": "Buß- und Bettag",
+        "2026-12-25": "1. Weihnachtstag",
+        "2026-12-26": "2. Weihnachtstag",
+        "2027-01-01": "Neujahr",
+        "2027-01-06": "Heilige Drei Könige",
+        "2027-04-02": "Karfreitag",
+        "2027-04-05": "Ostermontag",
+        "2027-05-01": "Tag der Arbeit",
+        "2027-05-06": "Christi Himmelfahrt",
+        "2027-05-17": "Pfingstmontag",
+        "2027-06-03": "Fronleichnam"
+      }
+    },
+    "2027/28": {
+      breaks: [
+        { from: "2027-08-02", to: "2027-09-13", name: "Sommerferien" },
+        { from: "2027-11-02", to: "2027-11-05", name: "Allerheiligenferien" },
+        { from: "2027-12-24", to: "2028-01-07", name: "Weihnachtsferien" },
+        { from: "2028-02-28", to: "2028-03-03", name: "Frühjahrsferien" },
+        { from: "2028-04-10", to: "2028-04-21", name: "Osterferien" },
+        { from: "2028-06-06", to: "2028-06-16", name: "Pfingstferien" },
+        { from: "2028-07-31", to: "2028-09-11", name: "Sommerferien" }
+      ],
+      days: {
+        "2027-10-03": "Tag der Deutschen Einheit",
+        "2027-11-01": "Allerheiligen",
+        "2027-11-17": "Buß- und Bettag",
+        "2027-12-25": "1. Weihnachtstag",
+        "2027-12-26": "2. Weihnachtstag",
+        "2028-01-01": "Neujahr",
+        "2028-01-06": "Heilige Drei Könige",
+        "2028-04-14": "Karfreitag",
+        "2028-04-17": "Ostermontag",
+        "2028-05-01": "Tag der Arbeit",
+        "2028-05-25": "Christi Himmelfahrt",
+        "2028-06-05": "Pfingstmontag",
+        "2028-06-15": "Fronleichnam"
+      }
+    },
+    "2028/29": {
+      breaks: [
+        { from: "2028-07-31", to: "2028-09-11", name: "Sommerferien" },
+        { from: "2028-10-30", to: "2028-11-03", name: "Allerheiligenferien" },
+        { from: "2028-12-23", to: "2029-01-05", name: "Weihnachtsferien" },
+        { from: "2029-02-12", to: "2029-02-16", name: "Frühjahrsferien" },
+        { from: "2029-03-26", to: "2029-04-06", name: "Osterferien" },
+        { from: "2029-05-22", to: "2029-06-01", name: "Pfingstferien" },
+        { from: "2029-07-30", to: "2029-09-10", name: "Sommerferien" }
+      ],
+      days: {
+        "2028-10-03": "Tag der Deutschen Einheit",
+        "2028-11-01": "Allerheiligen",
+        "2028-11-22": "Buß- und Bettag",
+        "2028-12-25": "1. Weihnachtstag",
+        "2028-12-26": "2. Weihnachtstag",
+        "2029-01-01": "Neujahr",
+        "2029-01-06": "Heilige Drei Könige",
+        "2029-03-30": "Karfreitag",
+        "2029-04-02": "Ostermontag",
+        "2029-05-01": "Tag der Arbeit",
+        "2029-05-10": "Christi Himmelfahrt",
+        "2029-05-21": "Pfingstmontag",
+        "2029-05-31": "Fronleichnam"
+      }
+    }
+  };
 
   const seed = {
-    version: 3,
+    version: STATE_VERSION,
     schoolYear: "2026/27",
     selectedClassId: "class-im10a",
     fields: [
@@ -49,7 +139,7 @@
           { day: "di", interval: 2 }
         ],
         blockRanges: "",
-        exceptions: [34, 35, 36, 37, 45, 52, 53, 1, 6, 12, 13, 20, 21, 31],
+        exceptions: [],
         fieldIds: ["field-lf1", "field-lf2", "field-lf3", "field-lf4"],
         modules: [
           { id: "im10-lf1-1", title: "Werkstattauftrag Anschlagwinkel planen", fieldId: "field-lf1", color: "blue", startWeek: 38, duration: 7, hours: 24, goals: "Technische Zeichnungen auswerten, Werkstoffe auswählen und einen sicheren Arbeitsplan erstellen.", content: "Teilzeichnung, Skizze, Maßstab, Allgemeintoleranzen, Werkstoffauswahl, Arbeitsplan und Arbeitsschutz", assessment: "Arbeitsplan mit Zeichnungsanalyse" },
@@ -77,7 +167,7 @@
           { day: "di", interval: 2 }
         ],
         blockRanges: "",
-        exceptions: [34, 35, 36, 37, 45, 52, 53, 1, 6, 12, 13, 20, 21, 31],
+        exceptions: [],
         fieldIds: ["field-lf5", "field-lf6", "field-lf7", "field-lf8", "field-lf9", "field-lf11"],
         modules: [
           { id: "im11-lf5-1", title: "Pumpenwelle konventionell planen", fieldId: "field-lf5", color: "blue", startWeek: 38, duration: 5, hours: 24, goals: "Zeichnung und Auftrag analysieren, Verfahren auswählen und einen vollständigen Arbeitsplan entwickeln.", content: "Technische Informationsquellen, Werkstoffnormung, Drehen, Fräsen, Spannmittel und Bearbeitungsparameter", assessment: "Arbeitsplan mit Verfahrensbegründung" },
@@ -108,7 +198,7 @@
         color: "#3d8761",
         days: [{ day: "do", interval: 1 }],
         blockRanges: "",
-        exceptions: [34, 35, 36, 37, 45, 52, 53, 1, 6, 12, 13, 20, 21, 31],
+        exceptions: [],
         fieldIds: ["field-lf10", "field-lf12", "field-lf13", "field-lf14", "field-lf15"],
         modules: [
           { id: "im12-lf10-1", title: "Montageauftrag für ein Antriebssystem klären", fieldId: "field-lf10", color: "green", startWeek: 38, duration: 6, hours: 28, goals: "Änderungsauftrag, Gesamtzeichnung und Funktionszusammenhänge analysieren und ein Pflichtenheft erstellen.", content: "Pflichtenheft, Getriebe, Kupplungen, Pumpen, elektrische Antriebe, Kennlinien und Sicherheit", assessment: "Auftragsanalyse und Pflichtenheft" },
@@ -138,6 +228,9 @@
   let redoStack = [];
   let toastTimer = null;
   let zoom = 74;
+  let editingTimetable = {};
+  let editingBlockWeeks = new Set();
+  let editingClassFieldIds = [];
 
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -151,11 +244,44 @@
   function loadState() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (saved && Array.isArray(saved.classes) && Array.isArray(saved.fields)) return saved;
+      if (saved && Array.isArray(saved.classes) && Array.isArray(saved.fields)) return migrateState(saved);
     } catch (error) {
       console.warn("Gespeicherte Planung konnte nicht geladen werden.", error);
     }
-    return clone(seed);
+    return migrateState(seed);
+  }
+
+  function migrateState(source) {
+    const data = clone(source);
+    const previousVersion = Number(data.version || 1);
+    data.version = STATE_VERSION;
+    data.ui = { calendarDensity: "compact", ...(data.ui || {}) };
+    data.subjectColors = { ...DEFAULT_SUBJECT_COLORS, ...(data.subjectColors || {}) };
+    data.fields.forEach((field, index) => {
+      field.area = field.area || "Sonstiges";
+      if (!data.subjectColors[field.area]) data.subjectColors[field.area] = FIELD_COLORS[index % FIELD_COLORS.length];
+    });
+    data.classes.forEach(clazz => {
+      clazz.days = (clazz.days || []).map(pattern => ({
+        day: pattern.day,
+        interval: Number(pattern.interval || 1),
+        cycle: Number(pattern.cycle || 0)
+      }));
+      clazz.cycleAnchorWeek = Number(clazz.cycleAnchorWeek || WEEK_SEQUENCE[0]);
+      clazz.blockWeeks = Array.isArray(clazz.blockWeeks) ? clazz.blockWeeks.map(Number) : [...parseBlockRanges(clazz.blockRanges)];
+      clazz.blockRanges = compactBlockWeeks(clazz.blockWeeks);
+      clazz.timetable = clazz.timetable && typeof clazz.timetable === "object" ? Object.fromEntries(Object.entries(clazz.timetable).map(([day, entries]) => [day, (entries || []).map((entry, index) => ({ id: entry.id || `lesson-${clazz.id}-${day}-${index}`, from: Number(entry.from || 1), to: Number(entry.to || entry.from || 1), fieldId: entry.fieldId || "" }))])) : {};
+      clazz.assessments = Array.isArray(clazz.assessments) ? clazz.assessments.map((assessment, index) => ({ id: assessment.id || `assessment-${clazz.id}-${index}`, type: "Schulaufgabe", notes: "", ...assessment })) : [];
+      clazz.exceptions = (clazz.exceptions || []).map(Number);
+      if (previousVersion < STATE_VERSION) clazz.exceptions = clazz.exceptions.filter(week => !LEGACY_EXCEPTION_WEEKS.has(week));
+      clazz.modules = (clazz.modules || []).map(module => ({
+        status: "not-started",
+        actualHours: 0,
+        ...module,
+        actualHours: Number(module.actualHours || 0)
+      }));
+    });
+    return data;
   }
 
   function saveState() {
@@ -207,29 +333,156 @@
     return result;
   }
 
+  function compactBlockWeeks(weeks = []) {
+    const ordered = [...new Set(weeks.map(Number).filter(week => weekIndex(week) >= 0))].sort((a, b) => weekIndex(a) - weekIndex(b));
+    const groups = [];
+    ordered.forEach(week => {
+      const previous = groups.at(-1);
+      if (previous && weekIndex(week) === weekIndex(previous.at(-1)) + 1) previous.push(week);
+      else groups.push([week]);
+    });
+    return groups.map(group => group.length === 1 ? `${group[0]}` : `${group[0]}-${group.at(-1)}`).join(", ");
+  }
+
+  function mixHex(base, target, amount) {
+    const parse = value => value.replace("#", "").match(/.{2}/g).map(part => parseInt(part, 16));
+    const [br, bg, bb] = parse(base);
+    const [tr, tg, tb] = parse(target);
+    return `#${[br, bg, bb].map((value, index) => Math.round(value + ([tr, tg, tb][index] - value) * amount).toString(16).padStart(2, "0")).join("")}`;
+  }
+
+  function fieldColor(field) {
+    if (!field) return FIELD_COLORS[0];
+    const base = state.subjectColors?.[field.area] || DEFAULT_SUBJECT_COLORS[field.area] || FIELD_COLORS[0];
+    const siblings = state.fields.filter(item => item.area === field.area);
+    const variant = Math.max(0, siblings.findIndex(item => item.id === field.id)) % 4;
+    if (variant === 1) return mixHex(base, "#000000", .18);
+    if (variant === 2) return mixHex(base, "#ffffff", .24);
+    if (variant === 3) return mixHex(base, "#000000", .08);
+    return base;
+  }
+
+  function isoWeekDate(year, week, weekday) {
+    const januaryFourth = new Date(Date.UTC(year, 0, 4));
+    const monday = new Date(januaryFourth);
+    monday.setUTCDate(januaryFourth.getUTCDate() - ((januaryFourth.getUTCDay() + 6) % 7) + (week - 1) * 7);
+    monday.setUTCDate(monday.getUTCDate() + weekday - 1);
+    return monday;
+  }
+
+  function dateKey(date) {
+    return date.toISOString().slice(0, 10);
+  }
+
+  function calendarYearForWeek(week) {
+    const startYear = Number(String(state.schoolYear).slice(0, 4)) || 2026;
+    return Number(week) >= 34 ? startYear : startYear + 1;
+  }
+
+  function freeDayName(date) {
+    const calendar = BAVARIA_CALENDARS[state.schoolYear];
+    if (!calendar) return "";
+    const key = dateKey(date);
+    const schoolBreak = calendar.breaks.find(item => key >= item.from && key <= item.to);
+    return schoolBreak?.name || calendar.days[key] || "";
+  }
+
+  function patternMatchesWeek(clazz, pattern, index) {
+    if (Number(pattern.interval || 1) === 1) return true;
+    const anchor = Math.max(0, weekIndex(clazz.cycleAnchorWeek || WEEK_SEQUENCE[0]));
+    const cycleIndex = ((index - anchor) % 2 + 2) % 2;
+    return cycleIndex === Number(pattern.cycle || 0);
+  }
+
+  function scheduledWeekdays(clazz, week, index) {
+    if (clazz.type === "block") {
+      const blockWeeks = new Set((clazz.blockWeeks?.length ? clazz.blockWeeks : [...parseBlockRanges(clazz.blockRanges)]).map(Number));
+      return blockWeeks.has(Number(week)) ? [1, 2, 3, 4, 5] : [];
+    }
+    return [...new Set((clazz.days || []).filter(pattern => patternMatchesWeek(clazz, pattern, index)).map(pattern => DAYS.findIndex(([key]) => key === pattern.day) + 1).filter(Boolean))];
+  }
+
+  function weekCalendarInfo(clazz, week, index) {
+    const weekdays = scheduledWeekdays(clazz, week, index);
+    if (!weekdays.length) return { status: "absent", weekdays, availableWeekdays: [], freeLabels: [] };
+    if ((clazz.exceptions || []).includes(Number(week))) {
+      return { status: "holiday", weekdays, availableWeekdays: [], freeLabels: ["Schulinterne Ausnahme"] };
+    }
+    const year = calendarYearForWeek(week);
+    const entries = weekdays.map(weekday => ({ weekday, name: freeDayName(isoWeekDate(year, Number(week), weekday)) }));
+    const availableWeekdays = entries.filter(entry => !entry.name).map(entry => entry.weekday);
+    const freeLabels = [...new Set(entries.map(entry => entry.name).filter(Boolean))];
+    const status = availableWeekdays.length === 0 ? "holiday" : availableWeekdays.length < weekdays.length ? "partial" : "present";
+    return { status, weekdays, availableWeekdays, freeLabels };
+  }
+
   function weekStatus(clazz, week, index) {
-    if ((clazz.exceptions || []).includes(week)) return "holiday";
-    if (clazz.type === "block") return parseBlockRanges(clazz.blockRanges).has(week) ? "present" : "absent";
-    return (clazz.days || []).some(pattern => pattern.interval === 1 || index % pattern.interval === 0) ? "present" : "absent";
+    return weekCalendarInfo(clazz, week, index).status;
   }
 
   function attendanceDays(clazz) {
-    if (clazz.type === "block") {
-      return WEEK_SEQUENCE.reduce((sum, week, index) => sum + (weekStatus(clazz, week, index) === "present" ? 5 : 0), 0);
-    }
-    return WEEK_SEQUENCE.reduce((sum, week, index) => {
-      if ((clazz.exceptions || []).includes(week)) return sum;
-      return sum + (clazz.days || []).filter(pattern => pattern.interval === 1 || index % pattern.interval === 0).length;
+    return WEEK_SEQUENCE.reduce((sum, week, index) => sum + weekCalendarInfo(clazz, week, index).availableWeekdays.length, 0);
+  }
+
+  function timetableHours(clazz, fieldId = null) {
+    return WEEK_SEQUENCE.reduce((total, week, index) => {
+      const info = weekCalendarInfo(clazz, week, index);
+      return total + info.availableWeekdays.reduce((dayTotal, weekday) => {
+        const dayKey = DAYS[weekday - 1]?.[0];
+        const entries = (clazz.timetable?.[dayKey] || []).filter(entry => !fieldId || entry.fieldId === fieldId);
+        return dayTotal + entries.reduce((sum, entry) => sum + Math.max(0, Number(entry.to || 0) - Number(entry.from || 0) + 1), 0);
+      }, 0);
     }, 0);
   }
 
   function scheduleText(clazz) {
-    if (clazz.type === "block") return clazz.blockRanges ? `Blockwochen: ${clazz.blockRanges}` : "Noch keine Blockwochen festgelegt";
+    if (clazz.type === "block") {
+      const ranges = compactBlockWeeks(clazz.blockWeeks || []);
+      return ranges ? `Blockwochen: ${ranges}` : "Noch keine Blockwochen festgelegt";
+    }
     if (!clazz.days?.length) return "Noch keine Schultage festgelegt";
-    return clazz.days.map(pattern => {
+    const description = clazz.days.map(pattern => {
       const dayName = DAYS.find(([key]) => key === pattern.day)?.[1] || pattern.day;
-      return `${dayName} · ${pattern.interval === 1 ? "wöchentlich" : "A-Woche"}`;
+      const cycle = Number(pattern.interval || 1) === 1 ? "wöchentlich" : Number(pattern.cycle || 0) === 0 ? "A-Woche" : "B-Woche";
+      return `${dayName} · ${cycle}`;
     }).join(" · ");
+    return (clazz.days || []).some(pattern => Number(pattern.interval || 1) === 2) ? `${description} · A-Rhythmus ab KW ${clazz.cycleAnchorWeek || WEEK_SEQUENCE[0]}` : description;
+  }
+
+  function getIsoWeek(date) {
+    const value = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    value.setUTCDate(value.getUTCDate() + 4 - (value.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(value.getUTCFullYear(), 0, 1));
+    return { year: value.getUTCFullYear(), week: Math.ceil((((value - yearStart) / 86400000) + 1) / 7) };
+  }
+
+  function currentTimelineIndex() {
+    const now = new Date();
+    const current = getIsoWeek(now);
+    const startYear = Number(String(state.schoolYear).slice(0, 4)) || 2026;
+    if (current.year === startYear && current.week >= 34) return weekIndex(current.week);
+    if (current.year === startYear + 1 && current.week <= 31) return weekIndex(current.week);
+    return current.year < startYear || (current.year === startYear && current.week < 34) ? -1 : WEEK_SEQUENCE.length;
+  }
+
+  function expectedModuleHours(module) {
+    const nowIndex = currentTimelineIndex();
+    const start = weekIndex(module.startWeek);
+    const duration = Math.max(1, Number(module.duration || 1));
+    if (start < 0 || nowIndex < start) return 0;
+    if (nowIndex >= start + duration - 1) return Number(module.hours || 0);
+    return Number(module.hours || 0) * ((nowIndex - start + 1) / duration);
+  }
+
+  function actualModuleHours(module) {
+    return clamp(Number(module.actualHours || 0), 0, Number(module.hours || 0));
+  }
+
+  function progressForClass(clazz) {
+    const planned = clazz.modules.reduce((sum, module) => sum + Number(module.hours || 0), 0);
+    const expected = clazz.modules.reduce((sum, module) => sum + expectedModuleHours(module), 0);
+    const actual = clazz.modules.reduce((sum, module) => sum + actualModuleHours(module), 0);
+    return { planned, expected: Math.round(expected), actual, variance: Math.round(actual - expected) };
   }
 
   function render() {
@@ -271,15 +524,37 @@
   function renderClassHeader() {
     const clazz = activeClass();
     if (!clazz) return;
-    const planned = clazz.modules.reduce((sum, module) => sum + Number(module.hours || 0), 0);
+    const progress = progressForClass(clazz);
     const target = classFields(clazz).reduce((sum, field) => sum + Number(field.targetHours || 0), 0);
     $("#activeClassName").textContent = clazz.name;
     $("#activeClassType").textContent = clazz.type === "block" ? "Blockklasse" : "Tagesklasse";
     $("#activeClassType").classList.toggle("block", clazz.type === "block");
-    $("#activeClassSchedule").textContent = [clazz.profile, scheduleText(clazz)].filter(Boolean).join(" · ");
+    const scheduledHours = timetableHours(clazz);
+    $("#activeClassSchedule").textContent = [clazz.profile, scheduleText(clazz), scheduledHours ? `${scheduledHours} Std. laut Stundenplan` : ""].filter(Boolean).join(" · ");
     $("#attendanceCount").textContent = attendanceDays(clazz);
-    $("#plannedHours").textContent = planned;
-    $("#coverageValue").textContent = `${target ? Math.round(planned / target * 100) : 0}%`;
+    $("#plannedHours").textContent = progress.planned;
+    $("#actualHours").textContent = progress.actual;
+    $("#coverageValue").textContent = `${target ? Math.round(progress.planned / target * 100) : 0}%`;
+  }
+
+  function assignCalendarLanes(modules, assessments) {
+    const items = [
+      ...modules.map(module => ({ kind: "module", id: module.id, start: weekIndex(module.startWeek), end: weekIndex(module.startWeek) + Math.max(1, Number(module.duration || 1)) - 1 })),
+      ...assessments.map(assessment => ({ kind: "assessment", id: assessment.id, start: weekIndex(assessment.week), end: weekIndex(assessment.week) }))
+    ].filter(item => item.start >= 0).sort((a, b) => a.start - b.start || b.end - a.end);
+    const laneEnds = [];
+    const laneByItem = new Map();
+    items.forEach(item => {
+      let lane = laneEnds.findIndex(end => item.start > end);
+      if (lane < 0) lane = laneEnds.length;
+      laneEnds[lane] = item.end;
+      laneByItem.set(`${item.kind}:${item.id}`, lane);
+    });
+    return { laneByItem, laneCount: Math.max(1, laneEnds.length) };
+  }
+
+  function moduleStatusLabel(status) {
+    return status === "completed" ? "Abgeschlossen" : status === "in-progress" ? "In Arbeit" : "Nicht begonnen";
   }
 
   function renderTimeline() {
@@ -288,6 +563,9 @@
     timeline.innerHTML = "";
     if (!clazz) return;
     const fields = classFields(clazz);
+    const detailMode = state.ui?.calendarDensity === "detail";
+    timeline.classList.toggle("detail-mode", detailMode);
+    $$("input[name='calendarDensity']").forEach(input => { input.checked = input.value === (detailMode ? "detail" : "compact"); });
 
     const header = document.createElement("div");
     header.className = "timeline-header";
@@ -298,10 +576,12 @@
 
     WEEK_SEQUENCE.forEach((week, index) => {
       const cell = document.createElement("div");
-      const status = weekStatus(clazz, week, index);
-      cell.className = `week-cell ${status}`;
+      const info = weekCalendarInfo(clazz, week, index);
+      const current = currentTimelineIndex() === index ? " current" : "";
+      cell.className = `week-cell ${info.status}${current}`;
       cell.dataset.week = week;
-      cell.innerHTML = `<b>${week}</b><span>${week >= 34 || week <= 5 ? "1. HJ" : "2. HJ"}</span>`;
+      cell.title = info.freeLabels.join(", ") || `KW ${week}`;
+      cell.innerHTML = `<b>${week}</b><span>${info.freeLabels.length ? escapeHtml(info.freeLabels.join(" · ")) : week >= 34 || week <= 5 ? "1. HJ" : "2. HJ"}</span>`;
       attachDropTarget(cell, week);
       header.append(cell);
     });
@@ -316,20 +596,29 @@
       const row = document.createElement("div");
       row.className = "subject-row";
       const subjectModules = clazz.modules.filter(module => module.fieldId === field.id);
+      const subjectAssessments = (clazz.assessments || []).filter(assessment => assessment.fieldId === field.id);
+      const lanes = assignCalendarLanes(subjectModules, subjectAssessments);
+      row.style.setProperty("--row-lanes", lanes.laneCount);
       const planned = subjectModules.reduce((sum, module) => sum + Number(module.hours || 0), 0);
+      const actual = subjectModules.reduce((sum, module) => sum + actualModuleHours(module), 0);
+      const available = timetableHours(clazz, field.id);
       const percent = field.targetHours ? clamp(Math.round(planned / field.targetHours * 100), 0, 100) : 0;
       const label = document.createElement("div");
       label.className = "subject-label";
-      label.style.setProperty("--subject-color", FIELD_COLORS[fieldIndex % FIELD_COLORS.length]);
-      label.innerHTML = `<strong>${escapeHtml(field.code)} · ${escapeHtml(field.name)}</strong><span>${escapeHtml(field.area || "Lernfeld")} · ${planned} / ${field.targetHours} Std.</span><div class="subject-progress"><i style="width:${percent}%"></i></div>`;
+      label.style.setProperty("--subject-color", fieldColor(field));
+      label.style.gridRow = `1 / span ${lanes.laneCount}`;
+      label.innerHTML = `<strong>${escapeHtml(field.code)} · ${escapeHtml(field.name)}</strong><span>${escapeHtml(field.area || "Lernfeld")} · ${actual} Ist / ${planned} geplant / ${field.targetHours} Soll${available ? ` · ${available} im Stundenplan` : ""}</span><div class="subject-progress"><i style="width:${percent}%"></i></div>`;
       row.append(label);
 
       WEEK_SEQUENCE.forEach((week, index) => {
         const gridCell = document.createElement("div");
-        gridCell.className = `grid-cell ${weekStatus(clazz, week, index)}`;
+        const info = weekCalendarInfo(clazz, week, index);
+        gridCell.className = `grid-cell ${info.status}`;
         gridCell.dataset.week = week;
-        gridCell.title = `KW ${week}: Doppelklick zum Anlegen`;
-        attachDropTarget(gridCell, week);
+        gridCell.style.gridColumn = `${index + 2}`;
+        gridCell.style.gridRow = `1 / span ${lanes.laneCount}`;
+        gridCell.title = `${info.freeLabels.length ? info.freeLabels.join(", ") + " · " : ""}KW ${week}: Doppelklick zum Anlegen`;
+        attachDropTarget(gridCell, week, field.id);
         gridCell.addEventListener("dblclick", () => openModuleDrawer(null, field.id, week));
         row.append(gridCell);
       });
@@ -338,19 +627,41 @@
         const start = weekIndex(module.startWeek);
         if (start < 0) return;
         const card = document.createElement("article");
-        card.className = "module-card";
-        card.dataset.color = module.color || "blue";
+        card.className = `module-card status-${module.status || "not-started"}`;
         card.dataset.moduleId = module.id;
         card.draggable = true;
+        card.style.setProperty("--module-color", fieldColor(field));
         card.style.gridColumn = `${start + 2} / span ${clamp(Number(module.duration) || 1, 1, WEEK_SEQUENCE.length - start)}`;
-        card.style.gridRow = "1";
-        card.innerHTML = `<strong>${escapeHtml(module.title)}</strong><span>${escapeHtml(module.content || "Noch keine Inhalte")}</span><small>${module.hours} Std. · ${module.duration} Wo.</small>`;
+        card.style.gridRow = `${lanes.laneByItem.get(`module:${module.id}`) + 1}`;
+        card.innerHTML = detailMode
+          ? `<strong>${escapeHtml(module.title)}</strong><span class="module-goals"><b>Lernziele:</b> ${escapeHtml(module.goals || "Noch nicht eingetragen")}</span><span><b>Inhalte:</b> ${escapeHtml(module.content || "Noch nicht eingetragen")}</span><small><i class="status-dot"></i>${moduleStatusLabel(module.status)} · ${actualModuleHours(module)} / ${module.hours} Ist-Std. · ${module.duration} Wo.</small>`
+          : `<strong>${escapeHtml(module.title)}</strong><small><i class="status-dot"></i>${actualModuleHours(module)} / ${module.hours} Std. · ${moduleStatusLabel(module.status)}</small>`;
         card.addEventListener("click", event => {
           event.stopPropagation();
           openModuleDrawer(module.id);
         });
         card.addEventListener("dragstart", event => {
-          event.dataTransfer.setData("text/plain", module.id);
+          event.dataTransfer.setData("text/plain", `module:${module.id}`);
+          event.dataTransfer.effectAllowed = "move";
+        });
+        row.append(card);
+      });
+
+      subjectAssessments.forEach(assessment => {
+        const start = weekIndex(assessment.week);
+        if (start < 0) return;
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "assessment-card";
+        card.draggable = true;
+        card.style.setProperty("--module-color", fieldColor(field));
+        card.style.gridColumn = `${start + 2}`;
+        card.style.gridRow = `${lanes.laneByItem.get(`assessment:${assessment.id}`) + 1}`;
+        card.title = [assessment.type, assessment.notes].filter(Boolean).join(" · ");
+        card.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>${escapeHtml(assessment.title)}</span>`;
+        card.addEventListener("click", event => { event.stopPropagation(); openAssessmentDialog(assessment.id); });
+        card.addEventListener("dragstart", event => {
+          event.dataTransfer.setData("text/plain", `assessment:${assessment.id}`);
           event.dataTransfer.effectAllowed = "move";
         });
         row.append(card);
@@ -360,7 +671,7 @@
     });
   }
 
-  function attachDropTarget(element, week) {
+  function attachDropTarget(element, week, fieldId = null) {
     element.addEventListener("dragover", event => {
       event.preventDefault();
       element.classList.add("drop-target");
@@ -369,11 +680,23 @@
     element.addEventListener("drop", event => {
       event.preventDefault();
       element.classList.remove("drop-target");
-      const moduleId = event.dataTransfer.getData("text/plain");
+      const [kind, itemId] = event.dataTransfer.getData("text/plain").split(":");
       const clazz = activeClass();
-      const module = clazz.modules.find(item => item.id === moduleId);
-      if (!module || module.startWeek === week) return;
-      commit(() => { module.startWeek = Number(week); }, `Baustein nach KW ${week} verschoben`);
+      if (kind === "assessment") {
+        const assessment = (clazz.assessments || []).find(item => item.id === itemId);
+        if (!assessment) return;
+        commit(() => {
+          assessment.week = Number(week);
+          if (fieldId) assessment.fieldId = fieldId;
+        }, `Leistungsnachweis nach KW ${week} verschoben`);
+        return;
+      }
+      const module = clazz.modules.find(item => item.id === itemId);
+      if (!module) return;
+      commit(() => {
+        module.startWeek = Number(week);
+        if (fieldId) module.fieldId = fieldId;
+      }, `Baustein nach KW ${week} verschoben`);
     });
   }
 
@@ -385,13 +708,14 @@
     fields.forEach((field, index) => {
       const modules = clazz?.modules.filter(module => module.fieldId === field.id) || [];
       const planned = modules.reduce((sum, module) => sum + Number(module.hours || 0), 0);
-      const percent = field.targetHours ? clamp(Math.round(planned / field.targetHours * 100), 0, 100) : 0;
+      const actual = modules.reduce((sum, module) => sum + actualModuleHours(module), 0);
+      const percent = planned ? clamp(Math.round(actual / planned * 100), 0, 100) : 0;
       const card = document.createElement("article");
       card.className = "field-card";
-      card.style.setProperty("--field-color", FIELD_COLORS[index % FIELD_COLORS.length]);
+      card.style.setProperty("--field-color", fieldColor(field));
       card.innerHTML = `
         <div class="field-card-header"><div><h3>${escapeHtml(field.code)} · ${escapeHtml(field.area || "Lernfeld")}</h3><p>${escapeHtml(field.name)}</p></div><span class="field-hours">${field.targetHours} Std.<small>${field.practicalHours ? `fpL ${field.practicalHours} Std.` : ""}</small></span></div>
-        <div class="field-metric"><span>${modules.length} Bausteine</span><strong>${planned} Std. geplant</strong></div>
+        <div class="field-metric"><span>${modules.length} Bausteine</span><strong>${actual} Ist / ${planned} geplant</strong></div>
         <div class="progress"><i style="width:${percent}%"></i></div>`;
       grid.append(card);
     });
@@ -401,15 +725,24 @@
   function renderOverview() {
     const grid = $("#overviewGrid");
     const modules = state.classes.flatMap(clazz => clazz.modules);
+    const assessments = state.classes.flatMap(clazz => clazz.assessments || []);
     const hours = modules.reduce((sum, module) => sum + Number(module.hours || 0), 0);
+    const actual = modules.reduce((sum, module) => sum + actualModuleHours(module), 0);
+    const expected = Math.round(modules.reduce((sum, module) => sum + expectedModuleHours(module), 0));
+    const variance = actual - expected;
     const dayClasses = state.classes.filter(clazz => clazz.type === "day").length;
     grid.innerHTML = `
       <article class="overview-card"><p>Klassen</p><div class="metric"><strong>${state.classes.length}</strong><span>insgesamt</span></div><p>${dayClasses} Tagesklassen · ${state.classes.length - dayClasses} Blockklassen</p></article>
-      <article class="overview-card"><p>Planungsbausteine</p><div class="metric"><strong>${modules.length}</strong><span>Bausteine</span></div><p>über alle Klassen</p></article>
-      <article class="overview-card"><p>Geplanter Umfang</p><div class="metric"><strong>${hours}</strong><span>Stunden</span></div><p>im Schuljahr ${escapeHtml(state.schoolYear)}</p></article>
-      <table class="overview-table"><thead><tr><th>Klasse</th><th>Modell</th><th>Rhythmus</th><th>Bausteine</th><th>Stunden</th></tr></thead><tbody>${state.classes.map(clazz => `
-        <tr><td><strong>${escapeHtml(clazz.name)}</strong></td><td>${clazz.type === "block" ? "Blockklasse" : "Tagesklasse"}</td><td>${escapeHtml(scheduleText(clazz))}</td><td>${clazz.modules.length}</td><td>${clazz.modules.reduce((sum, module) => sum + Number(module.hours || 0), 0)}</td></tr>`).join("")}</tbody></table>
-      <div class="source-note"><strong>Lehrplanbezug:</strong> Bayerische Lehrplanrichtlinie für Industriemechaniker/-innen: Jahrgangsstufen 10 und 11 mit jeweils 336 Stunden sowie die gemeinsam ausgewiesenen Jahrgangsstufen 12/13 mit 392 Stunden. Die Ferienwochen entsprechen dem bayerischen Schuljahr 2026/27; Teilwochen werden im Raster als ganze Kalenderwoche markiert. Der 14-tägige Dienstag ist als A-Woche in geraden Kalenderwochen hinterlegt. <a href="https://www.isb.bayern.de/fileadmin/user_upload/Berufliche_Schulen/Berufsschule/Lehrplan/bs_lpr_industriemechaniker.pdf" target="_blank" rel="noreferrer">Lehrplan beim ISB</a></div>`;
+      <article class="overview-card"><p>Planungsumfang</p><div class="metric"><strong>${hours}</strong><span>Stunden</span></div><p>${modules.length} Bausteine · ${assessments.length} Leistungsnachweise</p></article>
+      <article class="overview-card"><p>Soll bis heute</p><div class="metric"><strong>${expected}</strong><span>Stunden</span></div><p>aus Startwoche und Dauer</p></article>
+      <article class="overview-card ${variance < 0 ? "is-behind" : "is-on-track"}"><p>Ist-Stand</p><div class="metric"><strong>${actual}</strong><span>Stunden</span></div><p>${variance === 0 ? "genau im Plan" : variance > 0 ? `${variance} Std. vor dem Plan` : `${Math.abs(variance)} Std. hinter dem Plan`}</p></article>
+      <table class="overview-table"><thead><tr><th>Klasse</th><th>Modell</th><th>Rhythmus</th><th>Stundenplan</th><th>Gesamt</th><th>Soll heute</th><th>Ist</th><th>Abweichung</th><th>Status</th></tr></thead><tbody>${state.classes.map(clazz => {
+        const progress = progressForClass(clazz);
+        const status = progress.variance < 0 ? "Rückstand" : progress.variance > 0 ? "Vorsprung" : "Im Plan";
+        const scheduled = timetableHours(clazz);
+        return `<tr><td><strong>${escapeHtml(clazz.name)}</strong></td><td>${clazz.type === "block" ? "Blockklasse" : "Tagesklasse"}</td><td>${escapeHtml(scheduleText(clazz))}</td><td>${scheduled || "–"}</td><td>${progress.planned}</td><td>${progress.expected}</td><td>${progress.actual}</td><td class="variance ${progress.variance < 0 ? "negative" : "positive"}">${progress.variance > 0 ? "+" : ""}${progress.variance}</td><td><span class="plan-status ${progress.variance < 0 ? "behind" : "on-track"}">${status}</span></td></tr>`;
+      }).join("")}</tbody></table>
+      <div class="source-note"><strong>Datengrundlage:</strong> Die bayerischen Ferien ${escapeHtml(state.schoolYear)}, gesetzlichen Feiertage und der unterrichtsfreie Buß- und Bettag werden automatisch berücksichtigt. <a href="https://www.km.bayern.de/termine/ferien-und-feiertage" target="_blank" rel="noreferrer">Ferienkalender des Kultusministeriums</a> · <a href="https://www.isb.bayern.de/fileadmin/user_upload/Berufliche_Schulen/Berufsschule/Lehrplan/bs_lpr_industriemechaniker.pdf" target="_blank" rel="noreferrer">Lehrplan beim ISB</a></div>`;
   }
 
   function openModuleDrawer(moduleId = null, presetFieldId = null, presetWeek = null) {
@@ -421,7 +754,6 @@
     $("#moduleTitle").value = module?.title || "";
     $("#moduleField").innerHTML = fields.map(field => `<option value="${field.id}">${escapeHtml(field.code)} · ${escapeHtml(field.name)}</option>`).join("");
     $("#moduleField").value = module?.fieldId || presetFieldId || fields[0]?.id || "";
-    $("#moduleColor").value = module?.color || "blue";
     $("#moduleStart").innerHTML = WEEK_SEQUENCE.map(week => `<option value="${week}">KW ${week}</option>`).join("");
     $("#moduleStart").value = module?.startWeek || presetWeek || WEEK_SEQUENCE[0];
     $("#moduleDuration").value = module?.duration || 3;
@@ -429,6 +761,8 @@
     $("#moduleGoals").value = module?.goals || "";
     $("#moduleContent").value = module?.content || "";
     $("#moduleAssessment").value = module?.assessment || "";
+    $("#moduleActualHours").value = module?.actualHours || 0;
+    $("#moduleStatus").value = module?.status || "not-started";
     $("#deleteModuleBtn").hidden = !module;
     $("#drawerBackdrop").hidden = false;
     $("#detailDrawer").classList.add("open");
@@ -445,21 +779,95 @@
   function renderDayPatterns(selected = []) {
     $("#dayPatterns").innerHTML = DAYS.map(([key, name]) => {
       const current = selected.find(item => item.day === key);
-      return `<label class="day-pattern"><input type="checkbox" value="${key}" ${current ? "checked" : ""}><span>${name}</span><select aria-label="Turnus ${name}" ${current ? "" : "disabled"}><option value="1" ${current?.interval !== 2 ? "selected" : ""}>jede Woche</option><option value="2" ${current?.interval === 2 ? "selected" : ""}>nur A-Woche</option></select></label>`;
+      const value = Number(current?.interval || 1) === 1 ? "weekly" : Number(current?.cycle || 0) === 0 ? "a" : "b";
+      return `<label class="day-pattern"><input type="checkbox" value="${key}" ${current ? "checked" : ""}><span>${name}</span><select aria-label="Turnus ${name}" ${current ? "" : "disabled"}><option value="weekly" ${value === "weekly" ? "selected" : ""}>jede Woche</option><option value="a" ${value === "a" ? "selected" : ""}>nur A-Woche</option><option value="b" ${value === "b" ? "selected" : ""}>nur B-Woche</option></select></label>`;
     }).join("");
     $$(".day-pattern input").forEach(input => input.addEventListener("change", () => {
       $("select", input.closest(".day-pattern")).disabled = !input.checked;
+      renderTimetableEditor();
     }));
   }
 
+  function selectedDialogDays() {
+    if ($("input[name='classType']:checked").value === "block") return DAYS.map(([key]) => key);
+    return $$(".day-pattern").filter(row => $("input", row).checked).map(row => $("input", row).value);
+  }
+
+  function renderBlockWeekPicker() {
+    $("#blockWeekPicker").innerHTML = WEEK_SEQUENCE.map(week => `<label><input type="checkbox" value="${week}" ${editingBlockWeeks.has(week) ? "checked" : ""}><span>KW ${week}<small>${week >= 34 ? String(state.schoolYear).slice(0, 4) : String(Number(String(state.schoolYear).slice(0, 4)) + 1)}</small></span></label>`).join("");
+    $$("#blockWeekPicker input").forEach(input => input.addEventListener("change", () => {
+      if (input.checked) editingBlockWeeks.add(Number(input.value));
+      else editingBlockWeeks.delete(Number(input.value));
+    }));
+  }
+
+  function availableDialogFields() {
+    const fields = state.fields.filter(field => !editingClassFieldIds.length || editingClassFieldIds.includes(field.id));
+    return fields.length ? fields : state.fields;
+  }
+
+  function timetableFieldOptions(selectedId) {
+    return availableDialogFields().map(field => `<option value="${field.id}" ${field.id === selectedId ? "selected" : ""}>${escapeHtml(field.code)} · ${escapeHtml(field.area)} · ${escapeHtml(field.name)}</option>`).join("");
+  }
+
+  function renderTimetableEditor() {
+    const editor = $("#timetableEditor");
+    const days = selectedDialogDays();
+    if (!days.length) {
+      editor.innerHTML = `<p class="empty-inline">Wählen Sie zuerst mindestens einen Unterrichtstag.</p>`;
+      return;
+    }
+    editor.innerHTML = days.map(day => {
+      const dayName = DAYS.find(([key]) => key === day)?.[1] || day;
+      const entries = editingTimetable[day] || [];
+      return `<section class="timetable-day" data-day="${day}"><div class="timetable-day-heading"><strong>${dayName}</strong><button class="icon-button add-timetable-row" type="button" title="Unterricht hinzufügen" aria-label="Unterricht am ${dayName} hinzufügen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div><div class="timetable-rows">${entries.map(entry => `<div class="timetable-row" data-entry-id="${entry.id}"><label>von<input class="period-from" type="number" min="1" max="12" value="${entry.from}" aria-label="Erste Unterrichtsstunde"></label><label>bis<input class="period-to" type="number" min="1" max="12" value="${entry.to}" aria-label="Letzte Unterrichtsstunde"></label><label>Fach / Lernfeld<select class="period-field">${timetableFieldOptions(entry.fieldId)}</select></label><button class="icon-button remove-timetable-row" type="button" title="Eintrag entfernen" aria-label="Eintrag entfernen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 15H6L5 6M10 11v6M14 11v6"/></svg></button></div>`).join("") || `<p class="empty-inline">Noch kein Unterricht eingetragen.</p>`}</div></section>`;
+    }).join("");
+    $$(".add-timetable-row", editor).forEach(button => button.addEventListener("click", () => {
+      const day = button.closest(".timetable-day").dataset.day;
+      editingTimetable[day] ||= [];
+      const last = editingTimetable[day].at(-1);
+      const from = Math.min(12, Number(last?.to || 0) + 1 || 1);
+      editingTimetable[day].push({ id: id("lesson"), from, to: from, fieldId: availableDialogFields()[0]?.id || "" });
+      renderTimetableEditor();
+    }));
+    $$(".timetable-row", editor).forEach(row => {
+      const day = row.closest(".timetable-day").dataset.day;
+      const entry = editingTimetable[day].find(item => item.id === row.dataset.entryId);
+      $(".period-from", row).addEventListener("change", event => { entry.from = clamp(Number(event.target.value), 1, 12); });
+      $(".period-to", row).addEventListener("change", event => { entry.to = clamp(Number(event.target.value), entry.from, 12); });
+      $(".period-field", row).addEventListener("change", event => { entry.fieldId = event.target.value; });
+      $(".remove-timetable-row", row).addEventListener("click", () => {
+        editingTimetable[day] = editingTimetable[day].filter(item => item.id !== entry.id);
+        renderTimetableEditor();
+      });
+    });
+  }
+
+  function syncTimetableEditor() {
+    $$(".timetable-row", $("#timetableEditor")).forEach(row => {
+      const day = row.closest(".timetable-day").dataset.day;
+      const entry = editingTimetable[day]?.find(item => item.id === row.dataset.entryId);
+      if (!entry) return;
+      entry.from = clamp(Number($(".period-from", row).value), 1, 12);
+      entry.to = clamp(Number($(".period-to", row).value), entry.from, 12);
+      entry.fieldId = $(".period-field", row).value;
+    });
+  }
+
   function openClassDialog(clazz = null) {
-    $("#classDialogTitle").textContent = clazz ? "Klassenrhythmus bearbeiten" : "Klasse anlegen";
+    $("#classDialogTitle").textContent = clazz ? "Klasse bearbeiten" : "Klasse anlegen";
     $("#classId").value = clazz?.id || "";
     $("#className").value = clazz?.name || "";
+    $("#classProfile").value = clazz?.profile || "";
     const type = clazz?.type || "day";
     $$("input[name='classType']").forEach(input => { input.checked = input.value === type; });
     renderDayPatterns(clazz?.days || [{ day: "mo", interval: 1 }]);
-    $("#blockRanges").value = clazz?.blockRanges || "";
+    $("#cycleAnchorWeek").innerHTML = WEEK_SEQUENCE.map(week => `<option value="${week}">KW ${week}</option>`).join("");
+    $("#cycleAnchorWeek").value = clazz?.cycleAnchorWeek || WEEK_SEQUENCE[0];
+    editingTimetable = clone(clazz?.timetable || {});
+    editingBlockWeeks = new Set((clazz?.blockWeeks?.length ? clazz.blockWeeks : [...parseBlockRanges(clazz?.blockRanges || "")]).map(Number));
+    editingClassFieldIds = clone(clazz?.fieldIds || state.fields.map(field => field.id));
+    renderBlockWeekPicker();
     $("#deleteClassBtn").hidden = !clazz || state.classes.length <= 1;
     toggleClassTypeSettings();
     $("#classDialog").showModal();
@@ -470,6 +878,25 @@
     const type = $("input[name='classType']:checked").value;
     $("#daySettings").hidden = type !== "day";
     $("#blockSettings").hidden = type !== "block";
+    renderTimetableEditor();
+  }
+
+  function openAssessmentDialog(assessmentId = null, presetFieldId = null, presetWeek = null) {
+    const clazz = activeClass();
+    const assessment = assessmentId ? (clazz.assessments || []).find(item => item.id === assessmentId) : null;
+    const fields = classFields(clazz);
+    $("#assessmentDialogTitle").textContent = assessment ? "Leistungsnachweis bearbeiten" : "Leistungsnachweis anlegen";
+    $("#assessmentId").value = assessment?.id || "";
+    $("#assessmentTitle").value = assessment?.title || "";
+    $("#assessmentField").innerHTML = fields.map(field => `<option value="${field.id}">${escapeHtml(field.code)} · ${escapeHtml(field.area)} · ${escapeHtml(field.name)}</option>`).join("");
+    $("#assessmentField").value = assessment?.fieldId || presetFieldId || fields[0]?.id || "";
+    $("#assessmentWeek").innerHTML = WEEK_SEQUENCE.map(week => `<option value="${week}">KW ${week}</option>`).join("");
+    $("#assessmentWeek").value = assessment?.week || presetWeek || WEEK_SEQUENCE[0];
+    $("#assessmentType").value = assessment?.type || "Schulaufgabe";
+    $("#assessmentNotes").value = assessment?.notes || "";
+    $("#deleteAssessmentBtn").hidden = !assessment;
+    $("#assessmentDialog").showModal();
+    window.setTimeout(() => $("#assessmentTitle").focus(), 50);
   }
 
   function openExceptionDialog() {
@@ -507,7 +934,11 @@
               type: clazz.type === "block" ? "Blockklasse" : "Tagesklasse",
               schedule: scheduleText(clazz),
               modules: clazz.modules.length,
-              plannedHours: clazz.modules.reduce((sum, module) => sum + Number(module.hours || 0), 0)
+              plannedHours: progressForClass(clazz).planned,
+              expectedHoursToday: progressForClass(clazz).expected,
+              actualHours: progressForClass(clazz).actual,
+              varianceHours: progressForClass(clazz).variance,
+              assessments: (clazz.assessments || []).length
             }))
           }));
         }
@@ -549,7 +980,7 @@
           commit(() => activeClass().modules.push({
             id: id("module"), title, fieldId, startWeek: Number(startWeek),
             duration: clamp(Number(duration), 1, 18), hours: clamp(Number(hours), 1, 200),
-            color: "blue", goals: "", content: "", assessment: ""
+            goals: "", content: "", assessment: "", actualHours: 0, status: "not-started"
           }), "Baustein angelegt");
           return result(`${title} wurde in ${activeClass().name} ab KW ${startWeek} angelegt.`);
         }
@@ -566,12 +997,24 @@
   $("#addClassBtn").addEventListener("click", () => openClassDialog());
   $("#editClassBtn").addEventListener("click", () => openClassDialog(activeClass()));
   $("#addModuleBtn").addEventListener("click", () => openModuleDrawer());
-  $("#addFieldBtn").addEventListener("click", () => $("#fieldDialog").showModal());
+  $("#addAssessmentBtn").addEventListener("click", () => openAssessmentDialog());
+  $("#addFieldBtn").addEventListener("click", () => {
+    $("#subjectAreas").innerHTML = Object.keys(state.subjectColors || {}).sort().map(area => `<option value="${escapeHtml(area)}"></option>`).join("");
+    $("#fieldDialog").showModal();
+  });
   $("#manageExceptionsBtn").addEventListener("click", openExceptionDialog);
   $("#closeDrawerBtn").addEventListener("click", closeDrawer);
   $("#drawerBackdrop").addEventListener("click", closeDrawer);
   $$("input[name='classType']").forEach(input => input.addEventListener("change", toggleClassTypeSettings));
   $$('[data-close-dialog]').forEach(button => button.addEventListener("click", () => $("#" + button.dataset.closeDialog).close()));
+  $("#selectAllBlockWeeksBtn").addEventListener("click", () => {
+    editingBlockWeeks = new Set(WEEK_SEQUENCE);
+    renderBlockWeekPicker();
+  });
+  $("#clearBlockWeeksBtn").addEventListener("click", () => {
+    editingBlockWeeks.clear();
+    renderBlockWeekPicker();
+  });
 
   $("#moduleForm").addEventListener("submit", event => {
     event.preventDefault();
@@ -580,14 +1023,16 @@
     const data = {
       title: $("#moduleTitle").value.trim(),
       fieldId: $("#moduleField").value,
-      color: $("#moduleColor").value,
       startWeek: Number($("#moduleStart").value),
       duration: Number($("#moduleDuration").value),
       hours: Number($("#moduleHours").value),
       goals: $("#moduleGoals").value.trim(),
       content: $("#moduleContent").value.trim(),
-      assessment: $("#moduleAssessment").value.trim()
+      assessment: $("#moduleAssessment").value.trim(),
+      actualHours: Number($("#moduleActualHours").value || 0),
+      status: $("#moduleStatus").value
     };
+    data.actualHours = clamp(data.actualHours, 0, data.hours);
     commit(() => {
       const module = clazz.modules.find(item => item.id === moduleId);
       if (module) Object.assign(module, data);
@@ -602,6 +1047,38 @@
     commit(() => { activeClass().modules = activeClass().modules.filter(item => item.id !== moduleId); }, "Baustein gelöscht");
     closeDrawer();
   });
+  $("#moduleStatus").addEventListener("change", event => {
+    if (event.target.value === "completed" && Number($("#moduleActualHours").value || 0) === 0) $("#moduleActualHours").value = $("#moduleHours").value;
+  });
+
+  $("#assessmentForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const clazz = activeClass();
+    const assessmentId = $("#assessmentId").value;
+    const data = {
+      title: $("#assessmentTitle").value.trim(),
+      fieldId: $("#assessmentField").value,
+      week: Number($("#assessmentWeek").value),
+      type: $("#assessmentType").value,
+      notes: $("#assessmentNotes").value.trim()
+    };
+    commit(() => {
+      const assessment = (clazz.assessments || []).find(item => item.id === assessmentId);
+      if (assessment) Object.assign(assessment, data);
+      else {
+        clazz.assessments ||= [];
+        clazz.assessments.push({ id: id("assessment"), ...data });
+      }
+    }, assessmentId ? "Leistungsnachweis aktualisiert" : "Leistungsnachweis angelegt");
+    $("#assessmentDialog").close();
+  });
+
+  $("#deleteAssessmentBtn").addEventListener("click", () => {
+    const assessmentId = $("#assessmentId").value;
+    if (!assessmentId || !window.confirm("Diesen Leistungsnachweis löschen?")) return;
+    commit(() => { activeClass().assessments = (activeClass().assessments || []).filter(item => item.id !== assessmentId); }, "Leistungsnachweis gelöscht");
+    $("#assessmentDialog").close();
+  });
 
   $("#classForm").addEventListener("submit", event => {
     event.preventDefault();
@@ -609,31 +1086,39 @@
     const type = $("input[name='classType']:checked").value;
     const days = $$(".day-pattern").filter(row => $("input", row).checked).map(row => ({
       day: $("input", row).value,
-      interval: Number($("select", row).value)
+      interval: $("select", row).value === "weekly" ? 1 : 2,
+      cycle: $("select", row).value === "b" ? 1 : 0
     }));
     if (type === "day" && !days.length) {
       showToast("Bitte mindestens einen Schultag auswählen");
       return;
     }
-    if (type === "block" && !parseBlockRanges($("#blockRanges").value).size) {
-      showToast("Bitte gültige Blockwochen eintragen");
+    if (type === "block" && !editingBlockWeeks.size) {
+      showToast("Bitte mindestens eine Blockwoche auswählen");
       return;
     }
+    syncTimetableEditor();
+    const usedFieldIds = [...new Set(Object.values(editingTimetable).flat().map(entry => entry.fieldId).filter(Boolean))];
     const data = {
       name: $("#className").value.trim(),
+      profile: $("#classProfile").value.trim(),
       type,
       days,
-      blockRanges: $("#blockRanges").value.trim()
+      cycleAnchorWeek: Number($("#cycleAnchorWeek").value),
+      blockWeeks: [...editingBlockWeeks].sort((a, b) => weekIndex(a) - weekIndex(b)),
+      blockRanges: compactBlockWeeks([...editingBlockWeeks]),
+      timetable: clone(editingTimetable),
+      fieldIds: [...new Set([...editingClassFieldIds, ...usedFieldIds])]
     };
     commit(() => {
       const clazz = state.classes.find(item => item.id === classId);
       if (clazz) Object.assign(clazz, data);
       else {
-        const newClass = { id: id("class"), color: CLASS_COLORS[state.classes.length % CLASS_COLORS.length], exceptions: [], fieldIds: state.fields.map(field => field.id), modules: [], ...data };
+        const newClass = { id: id("class"), color: CLASS_COLORS[state.classes.length % CLASS_COLORS.length], exceptions: [], assessments: [], modules: [], ...data };
         state.classes.push(newClass);
         state.selectedClassId = newClass.id;
       }
-    }, classId ? "Klassenrhythmus aktualisiert" : "Klasse angelegt");
+    }, classId ? "Klasse aktualisiert" : "Klasse angelegt");
     $("#classDialog").close();
   });
 
@@ -652,11 +1137,15 @@
     event.preventDefault();
     commit(() => {
       const fieldId = id("field");
+      const area = $("#fieldArea").value.trim();
+      state.subjectColors ||= {};
+      if (!state.subjectColors[area]) state.subjectColors[area] = $("#fieldColor").value;
       state.fields.push({
-      id: fieldId,
-      code: $("#fieldCode").value.trim(),
-      name: $("#fieldName").value.trim(),
-      targetHours: Number($("#fieldHours").value)
+        id: fieldId,
+        code: $("#fieldCode").value.trim(),
+        area,
+        name: $("#fieldName").value.trim(),
+        targetHours: Number($("#fieldHours").value)
       });
       const clazz = activeClass();
       if (Array.isArray(clazz.fieldIds)) clazz.fieldIds.push(fieldId);
@@ -677,6 +1166,9 @@
   $$(".tab").forEach(tab => tab.addEventListener("click", () => {
     $$(".tab").forEach(item => item.classList.toggle("active", item === tab));
     $$('[data-view-panel]').forEach(panel => panel.classList.toggle("active", panel.dataset.viewPanel === tab.dataset.view));
+  }));
+  $$("input[name='calendarDensity']").forEach(input => input.addEventListener("change", event => {
+    commit(() => { state.ui.calendarDensity = event.target.value; }, event.target.value === "detail" ? "Ausführliche Ansicht" : "Kompakte Ansicht");
   }));
 
   $("#zoomInBtn").addEventListener("click", () => {
@@ -705,7 +1197,7 @@
     try {
       const imported = JSON.parse(await file.text());
       if (!Array.isArray(imported.classes) || !Array.isArray(imported.fields)) throw new Error("Ungültiges Format");
-      commit(() => { state = imported; }, "Planung importiert");
+      commit(() => { state = migrateState(imported); }, "Planung importiert");
     } catch (error) {
       showToast("Datei konnte nicht importiert werden");
     }
